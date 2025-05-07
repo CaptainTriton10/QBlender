@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
+import { exec } from "child_process";
 import path from "node:path";
 
 const require = createRequire(import.meta.url);
@@ -79,6 +80,22 @@ ipcMain.handle("dialog:openFile", async () => {
 	});
 	if (canceled) return null;
 	return filePaths;
+});
+
+ipcMain.handle("app_quit", () => {
+	app.quit();
+});
+
+ipcMain.handle("run_command", async (_event, command) => {
+	return new Promise((resolve, reject) => {
+		exec(command, (error, stdout, stderr) => {
+			if (error) {
+				reject(stderr || error.message);
+			} else {
+				resolve(stdout);
+			}
+		})
+	})
 });
 
 app.whenReady().then(createWindow);
