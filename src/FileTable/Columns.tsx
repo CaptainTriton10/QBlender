@@ -16,7 +16,7 @@ export type ColumnTypes = {
 	file: string;
 	status: "Not Started" | "In Progress" | "Completed" | "Error";
 	frameCount: number;
-	renderFormat: string;
+	exportLocation: string;
 };
 
 export const columns: ColumnDef<ColumnTypes>[] = [
@@ -77,30 +77,39 @@ export const columns: ColumnDef<ColumnTypes>[] = [
 		header: "Frame Count",
 	},
 	{
-		accessorKey: "renderFormat",
-		header: "Render Format",
+		accessorKey: "exportLocation",
+		header: "Export Location",
 		cell: ({ row }) => {
-			const _thisRow = row.original;
 
-			return (
-				<Select>
-					<SelectTrigger>
-						<SelectValue placeholder="PNG" />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectItem value="PNG">PNG</SelectItem>
-						<SelectItem value="JPEG">JPEG</SelectItem>
-						<SelectItem value="FFMPEG">FFMPEG</SelectItem>
-						<SelectItem value="AVIJPEG">AVI</SelectItem>
-						<SelectItem value="WEBP">WEBP</SelectItem>
-						<SelectItem value="OPEN_EXR_MULTILAYER">
-							EXR Multilayer
-						</SelectItem>
-						<SelectItem value="OPEN_EXR">EXR</SelectItem>
-						<SelectItem value="HDR">HDR</SelectItem>
-					</SelectContent>
-				</Select>
-			);
-		},
-	},
+		}
+	}
+
 ];
+
+// {
+// 	accessorKey: "renderFormat",
+// 		header: "Render Format",
+// 			cell: ({ row }) => {
+// 				const _thisRow = row.original;
+
+// 				return (
+// 					<Select>
+// 						<SelectTrigger>
+// 							<SelectValue placeholder="PNG" />
+// 						</SelectTrigger>
+// 						<SelectContent>
+// 							<SelectItem value="PNG">PNG</SelectItem>
+// 							<SelectItem value="JPEG">JPEG</SelectItem>
+// 							<SelectItem value="FFMPEG">FFMPEG</SelectItem>
+// 							<SelectItem value="AVIJPEG">AVI</SelectItem>
+// 							<SelectItem value="WEBP">WEBP</SelectItem>
+// 							<SelectItem value="OPEN_EXR_MULTILAYER">
+// 								EXR Multilayer
+// 							</SelectItem>
+// 							<SelectItem value="OPEN_EXR">EXR</SelectItem>
+// 							<SelectItem value="HDR">HDR</SelectItem>
+// 						</SelectContent>
+// 					</Select>
+// 				);
+// 			},
+// 	},

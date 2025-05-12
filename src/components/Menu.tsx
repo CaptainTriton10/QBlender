@@ -4,25 +4,29 @@ import {
 	MenubarItem,
 	MenubarMenu,
 	MenubarSeparator,
-	MenubarShortcut,
+	// MenubarShortcut,
 	MenubarTrigger,
 } from "@/components/ui/menubar";
 import { Separator } from "@/components/ui/separator.tsx";
 
 async function HandleUpload() {
-	const paths = await window.ipcRenderer.invoke("dialog:openFile");
+	const paths = await window.ipcRenderer.invoke("open_file");
 	console.log(paths);
+}
+
+function AppQuit() {
+	window.ipcRenderer.invoke("app_quit");
 }
 
 function Menu() {
 	return (
 		<>
 			<Menubar>
-				<MenubarMenu>s
+				<MenubarMenu>
 					<MenubarTrigger>File</MenubarTrigger>
 					<MenubarContent>
 						<MenubarItem onClick={HandleUpload}>Import</MenubarItem>
-						<MenubarItem>Quit</MenubarItem>
+						<MenubarItem onClick={AppQuit}>Quit</MenubarItem>
 					</MenubarContent>
 				</MenubarMenu>
 				<Separator orientation="vertical" className="mx-1" />
@@ -39,7 +43,7 @@ function Menu() {
 					<MenubarContent>
 						<MenubarItem>Render All</MenubarItem>
 						<MenubarItem>Render Selection</MenubarItem>
-						<MenubarSeparator className="mx-1"/>
+						<MenubarSeparator className="mx-1" />
 						<MenubarItem>Stop Render</MenubarItem>
 					</MenubarContent>
 				</MenubarMenu>
