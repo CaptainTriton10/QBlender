@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
-import { exec } from "child_process";
+import { spawn } from "child_process";
 import path from "node:path";
 
 const require = createRequire(import.meta.url);
@@ -73,7 +73,7 @@ app.on("activate", () => {
 	}
 });
 
-ipcMain.handle("dialog:openFile", async () => {
+ipcMain.handle("open_file", async () => {
 	const { canceled, filePaths } = await dialog.showOpenDialog({
 		properties: ["openFile", "multiSelections"],
 		filters: [{ name: "Blend Files", extensions: ["blend"] }],
@@ -86,16 +86,19 @@ ipcMain.handle("app_quit", () => {
 	app.quit();
 });
 
-ipcMain.handle("run_command", async (_event, command) => {
-	return new Promise((resolve, reject) => {
-		exec(command, (error, stdout, stderr) => {
-			if (error) {
-				reject(stderr || error.message);
-			} else {
-				resolve(stdout);
-			}
-		})
+ipcMain.on("run_command", (event, command: string, args: string[]) => {
+	const child = spawn(command, args);
+
+	console.log(`Running: ${command}`);
+
+	child.stdout.on("data", (data) => {
+		event.sender.send("stdout", String(data));
+	});
+
+	child.stderr.on("error", (error) => {
+		event.sender.send("stderr", String(error));
 	})
 });
+
 
 app.whenReady().then(createWindow);

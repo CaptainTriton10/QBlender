@@ -1,8 +1,19 @@
-async function RunCommand(command: string) {
-    // @ts-ignore
-    const result = await window.electron.runCommand(command);
+import { MutableRefObject } from "react";
+import { Command } from "../types.ts";
 
-    return result;
+type CommandCallback = (data: string) => void;
+
+function RunCommand(hasRun: MutableRefObject<boolean>, command: Command, callback: CommandCallback) {
+    if (hasRun.current) { return; }
+    hasRun.current = true;
+
+    // @ts-ignore
+    window.run_command.runCommand(command.command, command.args);
+
+    // @ts-ignore
+    window.run_command.onCommandStdout((data: string) => {
+        callback(data);
+    });
 }
 
-export default RunCommand;
+export { RunCommand };
