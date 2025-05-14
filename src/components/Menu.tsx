@@ -22,6 +22,7 @@ function AppQuit() {
 
 type MenuProps = {
 	selectAll: () => void;
+	deselectAll: () => void;
 }
 
 function Menu(props: MenuProps) {
@@ -49,7 +50,7 @@ function Menu(props: MenuProps) {
 						<MenubarItem onClick={() => props.selectAll()}>
 							Select All<MenubarShortcut>A</MenubarShortcut>
 						</MenubarItem>
-						<MenubarItem>
+						<MenubarItem onClick={() => props.deselectAll()}>
 							Deselect All<MenubarShortcut>Alt+A</MenubarShortcut>
 						</MenubarItem>
 					</MenubarContent>

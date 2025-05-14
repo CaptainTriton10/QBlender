@@ -18,6 +18,7 @@ import { useImperativeHandle, Ref, useState } from "react";
 
 type QueueViewRefType = {
 	SelectAll: () => void;
+	DeselectAll: () => void;
 }
 
 type QueueViewProps<TData, TValue> = {
@@ -46,11 +47,20 @@ function QueueView<TData, TValue>(
 	});
 
 	function SelectAll() {
-		table.toggleAllPageRowsSelected();
+		if (!table.getIsAllPageRowsSelected()) {
+			table.toggleAllPageRowsSelected();
+		}
+	}
+
+	function DeselectAll() {
+		if (table.getIsAllPageRowsSelected()) {
+			table.toggleAllPageRowsSelected();
+		}
 	}
 
 	useImperativeHandle(props.ref, () => ({
 		SelectAll,
+		DeselectAll
 	}))
 
 	return (

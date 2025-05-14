@@ -33,7 +33,9 @@ function App() {
 					<main style={{ flex: 1 }}>
 						<SidebarTrigger />
 						<div className="p-3">
-							<Menu selectAll={() => { queueViewRef.current?.SelectAll(); }} />
+							<Menu
+								selectAll={() => queueViewRef.current?.SelectAll()}
+								deselectAll={() => queueViewRef.current?.DeselectAll()} />
 							<Separator className="my-5" />
 							<QueueView ref={queueViewRef} columns={columns} data={data} />
 						</div>
