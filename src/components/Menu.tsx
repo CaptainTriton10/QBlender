@@ -20,9 +20,11 @@ function AppQuit() {
 	window.ipcRenderer.invoke("app_quit");
 }
 
-type
+type MenuProps = {
+	selectAll: () => void;
+}
 
-function Menu() {
+function Menu(props: MenuProps) {
 	useHotkeys("ctrl+q", () => AppQuit());
 	useHotkeys("ctrl+i", () => HandleUpload());
 
@@ -44,7 +46,7 @@ function Menu() {
 				<MenubarMenu>
 					<MenubarTrigger>Edit</MenubarTrigger>
 					<MenubarContent>
-						<MenubarItem>
+						<MenubarItem onClick={() => props.selectAll()}>
 							Select All<MenubarShortcut>A</MenubarShortcut>
 						</MenubarItem>
 						<MenubarItem>

@@ -6,7 +6,6 @@ import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 import { AppSidebar } from "./components/AppSidebar";
 import { columns, RenderItem } from "@/components/QueueView/Columns";
 import { useRef } from "react";
-import { Button } from "./components/ui/button";
 import { QueueViewRefType } from "@/components/QueueView/QueueView";
 
 function GetData(): RenderItem[] {
@@ -34,7 +33,7 @@ function App() {
 					<main style={{ flex: 1 }}>
 						<SidebarTrigger />
 						<div className="p-3">
-							<Menu />
+							<Menu selectAll={() => { queueViewRef.current?.SelectAll(); }} />
 							<Separator className="my-5" />
 							<QueueView ref={queueViewRef} columns={columns} data={data} />
 						</div>
