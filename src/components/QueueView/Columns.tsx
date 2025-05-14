@@ -2,28 +2,34 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge.tsx";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { useHotkeys } from "react-hotkeys-hook";
 
-export type ColumnTypes = {
+export type RenderItem = {
 	file: string;
 	status: "Not Started" | "In Progress" | "Completed" | "Error";
 	frameCount: number;
 	exportLocation: string;
 };
 
-export const columns: ColumnDef<ColumnTypes>[] = [
+export const columns: ColumnDef<RenderItem>[] = [
 	{
 		accessorKey: "file",
 		id: "select",
 		header: ({ table }) => {
+			useHotkeys("a", () => {
+				if (!table.getIsAllPageRowsSelected()) {
+					table.toggleAllPageRowsSelected();
+				}
+			});
+
+			useHotkeys("alt+a", () => {
+				if (table.getIsAllPageRowsSelected()) {
+					table.toggleAllPageRowsSelected();
+				}
+			})
+
 			return (
 				<div className="flex space-x-4 items-center">
 					<Checkbox

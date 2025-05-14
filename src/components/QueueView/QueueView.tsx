@@ -14,24 +14,57 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { useImperativeHandle, Ref, useState } from "react";
 
-interface FileTableProps<TData, TValue> {
-	columns: ColumnDef<TData, TValue>[];
-	data: TData[];
+type QueueViewRefType = {
+	SelectAll: () => void;
+	DeselectAll: () => void;
 }
 
-export function FileTable<TData, TValue>({
-	columns,
-	data,
-}: FileTableProps<TData, TValue>) {
+type QueueViewProps<TData, TValue> = {
+	columns: ColumnDef<TData, TValue>[];
+	data: TData[];
+	ref: Ref<QueueViewRefType>;
+}
+
+function QueueView<TData, TValue>(
+	props: QueueViewProps<TData, TValue>) {
+
+	const [rowSelection, setRowSelection] = useState({});
+
+	const data = props.data;
+	const columns = props.columns
+
 	const table = useReactTable({
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
+		enableRowSelection: true,
+		onRowSelectionChange: setRowSelection,
+		state: {
+			rowSelection
+		}
 	});
 
+	function SelectAll() {
+		if (!table.getIsAllPageRowsSelected()) {
+			table.toggleAllPageRowsSelected();
+		}
+	}
+
+	function DeselectAll() {
+		if (table.getIsAllPageRowsSelected()) {
+			table.toggleAllPageRowsSelected();
+		}
+	}
+
+	useImperativeHandle(props.ref, () => ({
+		SelectAll,
+		DeselectAll
+	}))
+
 	return (
-		<div>
+		<div className="rounded-md border">
 			<Table>
 				<TableHeader>
 					{table.getHeaderGroups().map((headerGroup) => (
@@ -42,10 +75,10 @@ export function FileTable<TData, TValue>({
 										{header.isPlaceholder
 											? null
 											: flexRender(
-													header.column.columnDef
-														.header,
-													header.getContext()
-											  )}
+												header.column.columnDef
+													.header,
+												header.getContext()
+											)}
 									</TableHead>
 								);
 							})}
@@ -81,6 +114,9 @@ export function FileTable<TData, TValue>({
 					)}
 				</TableBody>
 			</Table>
-		</div>
+		</div >
 	);
 }
+
+export default QueueView;
+export type { QueueViewRefType };
