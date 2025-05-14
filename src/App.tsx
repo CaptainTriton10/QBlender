@@ -1,14 +1,30 @@
 import { ThemeProvider } from "@/components/ThemeProvider.tsx";
 import { Separator } from "@/components/ui/separator.tsx";
-import QueueView from "@/components/QueueView.tsx";
+import QueueView from "@/components/QueueView/QueueView";
 import Menu from "@/components/Menu.tsx";
 import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 import { AppSidebar } from "./components/AppSidebar";
+import { columns, RenderItem } from "@/components/QueueView/Columns";
+import { useRef } from "react";
+import { Button } from "./components/ui/button";
+import { QueueViewRefType } from "@/components/QueueView/QueueView";
+
+function GetData(): RenderItem[] {
+	return [{
+		file: "idk.blend",
+		status: "Not Started",
+		frameCount: 123,
+		exportLocation: "./renders/"
+	}]
+}
 
 function App() {
+	const data = GetData();
+	const queueViewRef = useRef<QueueViewRefType>(null);
+
 	return (
 		<ThemeProvider defaultTheme="dark">
-			<SidebarProvider>
+			<SidebarProvider defaultOpen={false}>
 				<div style={{
 					display: "flex",
 					height: "100vh",
@@ -20,7 +36,7 @@ function App() {
 						<div className="p-3">
 							<Menu />
 							<Separator className="my-5" />
-							<QueueView />
+							<QueueView ref={queueViewRef} columns={columns} data={data} />
 						</div>
 					</main>
 				</div>
