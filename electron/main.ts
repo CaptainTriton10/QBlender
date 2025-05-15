@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { spawn } from "child_process";
+import Store from "electron-store";
 import path from "node:path";
 
 const require = createRequire(import.meta.url);
@@ -22,6 +23,8 @@ process.env.APP_ROOT = path.join(__dirname, "..");
 export const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
 export const MAIN_DIST = path.join(process.env.APP_ROOT, "dist-electron");
 export const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
+
+const store = new Store();
 
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
 	? path.join(process.env.APP_ROOT, "public")
@@ -99,6 +102,16 @@ ipcMain.on("run_command", (event, command: string, args: string[]) => {
 		event.sender.send("stderr", String(error));
 	})
 });
+
+ipcMain.handle("set_store", (_event, key: string, value: JSON | string) => {
+	store.set(key, value);
+});
+
+ipcMain.handle("get_store", (_event, key: string) => {
+	const value = store.get(key);
+
+	return value;
+})
 
 
 app.whenReady().then(createWindow);
