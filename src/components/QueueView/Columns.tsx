@@ -85,9 +85,6 @@ export const columns: ColumnDef<RenderItem>[] = [
 	{
 		accessorKey: "exportLocation",
 		header: "Export Location",
-		cell: ({ row }) => {
-
-		}
 	}
 
 ];

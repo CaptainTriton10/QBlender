@@ -1,11 +1,15 @@
+import { RenderItem } from "@/components/QueueView/Columns";
 import { Command } from "@/types.ts";
+
 
 class Render {
     public filename: string;
     public args: string[];
-    public blenderLocation = "C:\\Program Files\\Blender Foundation\\Blender 4.4\\blender.exe";
+    public status: "Not Started" | "In Progress" | "Completed" | "Error";
+    private blenderLocation = "C:\\Program Files\\Blender Foundation\\Blender 4.4\\blender.exe";
 
     public constructor(filename: string, args: string[]) {
+        this.status = "Not Started";
         this.filename = filename;
         this.args = args;
     }
@@ -20,6 +24,17 @@ class Render {
         console.log(command);
 
         return command;
+    }
+
+    public ToRenderItem() {
+        let renderItem: RenderItem = {
+            file: this.filename.split("\\")[0],
+            status: "Not Started",
+            frameCount: 123,
+            exportLocation: "asdf"
+        };
+
+        return renderItem;
     }
 
     public ToString() {

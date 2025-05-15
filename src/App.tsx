@@ -1,24 +1,31 @@
+import Menu from "@/components/Menu.tsx";
+import { columns, RenderItem } from "@/components/QueueView/Columns";
+import QueueView, { QueueViewRefType } from "@/components/QueueView/QueueView";
 import { ThemeProvider } from "@/components/ThemeProvider.tsx";
 import { Separator } from "@/components/ui/separator.tsx";
-import QueueView from "@/components/QueueView/QueueView";
-import Menu from "@/components/Menu.tsx";
-import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
+import { Dispatch, useRef, useState } from "react";
 import { AppSidebar } from "./components/AppSidebar";
-import { columns, RenderItem } from "@/components/QueueView/Columns";
-import { useRef } from "react";
-import { QueueViewRefType } from "@/components/QueueView/QueueView";
+import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
+import Render from "./handlers/RenderHandler";
+import { Button } from "./components/ui/button";
 
-function GetData(): RenderItem[] {
-	return [{
-		file: "idk.blend",
-		status: "Not Started",
-		frameCount: 123,
-		exportLocation: "./renders/"
-	}]
+let renderQueue: Render[] = [];
+
+function UpdateQueue(queue: Render[], item: Render, setState: Dispatch<React.SetStateAction<RenderItem[]>>) {
+	queue.push(item);
+
+	let renderItems: RenderItem[] = [];
+
+	queue.forEach(render => {
+		renderItems.push(render.ToRenderItem());
+	})
+
+	setState(renderItems);
 }
 
 function App() {
-	const data = GetData();
+	const [data, setData] = useState<RenderItem[]>([]);
+
 	const queueViewRef = useRef<QueueViewRefType>(null);
 
 	return (
@@ -33,6 +40,7 @@ function App() {
 					<main style={{ flex: 1 }}>
 						<SidebarTrigger />
 						<div className="p-3">
+							<Button onClick={() => UpdateQueue(renderQueue, new Render("asdf", []), setData)}>press</Button>
 							<Menu
 								selectAll={() => queueViewRef.current?.SelectAll()}
 								deselectAll={() => queueViewRef.current?.DeselectAll()} />
