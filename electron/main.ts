@@ -79,7 +79,7 @@ app.on("activate", () => {
 ipcMain.handle("open_file", async () => {
 	const { canceled, filePaths } = await dialog.showOpenDialog({
 		properties: ["openFile", "multiSelections"],
-		filters: [{ name: "Blend Files", extensions: ["blend"] }],
+		filters: [{ name: "Blender Files", extensions: ["blend"] }],
 	});
 	if (canceled) return null;
 	return filePaths;
