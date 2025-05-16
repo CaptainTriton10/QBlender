@@ -8,11 +8,12 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { AppSidebar } from "./components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 import Render from "./handlers/RenderHandler";
+import RenderProperties from "./components/RenderProperties";
 
 let renderQueue: Render[] = [];
 
-function UpdateQueue(queue: Render[], item: Render, setState: Dispatch<React.SetStateAction<RenderItem[]>>) {
-	queue.push(item);
+function UpdateQueue(queue: Render[], item: Render | undefined, setState: Dispatch<React.SetStateAction<RenderItem[]>>) {
+	if (item) queue.push(item);
 
 	let renderItems: RenderItem[] = [];
 
@@ -25,9 +26,9 @@ function UpdateQueue(queue: Render[], item: Render, setState: Dispatch<React.Set
 
 async function HandleUpload(setState: Dispatch<React.SetStateAction<RenderItem[]>>) {
 	// @ts-ignore
-	const paths = await window.open_file.openFile().then((paths) => {
+	const paths = await window.open_file.openFile(true).then((paths) => {
 		paths.forEach((path: string) => {
-			UpdateQueue(renderQueue, new Render(path, []), setState);
+			UpdateQueue(renderQueue, new Render(path, [], ""), setState);
 		});
 	});
 }

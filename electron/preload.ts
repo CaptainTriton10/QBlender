@@ -24,7 +24,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 })
 
 contextBridge.exposeInMainWorld('open_file', {
-    openFile: () => ipcRenderer.invoke('open_file')
+    openFile: (isFolder: boolean) => ipcRenderer.invoke('open_file', isFolder)
 });
 
 contextBridge.exposeInMainWorld("run_command", {

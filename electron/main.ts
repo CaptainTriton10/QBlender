@@ -76,13 +76,23 @@ app.on("activate", () => {
 	}
 });
 
-ipcMain.handle("open_file", async () => {
-	const { canceled, filePaths } = await dialog.showOpenDialog({
-		properties: ["openFile", "multiSelections"],
-		filters: [{ name: "Blender Files", extensions: ["blend"] }],
-	});
-	if (canceled) return null;
-	return filePaths;
+ipcMain.handle("open_file", async (_event, isFolder: boolean) => {
+	if (isFolder) {
+		const { canceled, filePaths } = await dialog.showOpenDialog({
+			properties: ["openFile", "multiSelections"],
+			filters: [{ name: "Blender Files", extensions: ["blend"] }],
+		});
+
+		if (canceled) return null;
+		return filePaths;
+
+	} else {
+		const { canceled, filePaths } = await dialog.showOpenDialog({
+			properties: ["openDirectory"]
+		});
+		if (canceled) return null;
+		return filePaths;
+	}
 });
 
 ipcMain.handle("app_quit", () => {
