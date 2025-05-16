@@ -6,11 +6,13 @@ class Render {
     public filename: string;
     public args: string[];
     public status: "Not Started" | "In Progress" | "Completed" | "Error";
+    public exportLocation: string;
     private blenderLocation = "C:\\Program Files\\Blender Foundation\\Blender 4.4\\blender.exe";
 
-    public constructor(filename: string, args: string[]) {
+    public constructor(filename: string, args: string[], exportLocation: string) {
         this.status = "Not Started";
         this.filename = filename;
+        this.exportLocation = exportLocation;
         this.args = args;
     }
 
@@ -27,14 +29,20 @@ class Render {
     }
 
     public ToRenderItem() {
+        const splitFilename = this.filename.split("\\");
+
         let renderItem: RenderItem = {
-            file: this.filename.split("\\")[0],
+            file: splitFilename[splitFilename.length - 1].slice(0, -6),
             status: "Not Started",
             frameCount: 123,
-            exportLocation: "asdf"
+            exportLocation: this.exportLocation
         };
 
         return renderItem;
+    }
+
+    public Render() {
+
     }
 
     public ToString() {

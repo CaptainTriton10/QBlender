@@ -1,9 +1,9 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge.tsx";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { ColumnDef } from "@tanstack/react-table";
 import { useHotkeys } from "react-hotkeys-hook";
 
 export type RenderItem = {
@@ -67,15 +67,10 @@ export const columns: ColumnDef<RenderItem>[] = [
 		cell: ({ row }) => {
 			const status = row.original.status;
 
-			if (status === "Completed") {
-				return <Badge variant={"default"}>{status}</Badge>;
-			} else if (status === "In Progress") {
-				return <Badge variant={"secondary"}>{status}</Badge>;
-			} else if (status === "Not Started") {
-				return <Badge variant={"outline"}>{status}</Badge>;
-			} else {
-				return <Badge variant={"destructive"}>{status}</Badge>;
-			}
+			if (status === "Completed") return <Badge variant={"default"}>{status}</Badge>;
+			else if (status === "In Progress") return <Badge variant={"secondary"}>{status}</Badge>;
+			else if (status === "Not Started") return <Badge variant={"outline"}>{status}</Badge>;
+			else return <Badge variant={"destructive"}>{status}</Badge>;
 		},
 	},
 	{
@@ -86,7 +81,6 @@ export const columns: ColumnDef<RenderItem>[] = [
 		accessorKey: "exportLocation",
 		header: "Export Location",
 	}
-
 ];
 
 // {
