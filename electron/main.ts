@@ -1,11 +1,10 @@
 import { app, BrowserWindow, ipcMain, dialog } from "electron";
-import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { spawn } from "child_process";
 import Store from "electron-store";
 import path from "node:path";
+import { platform } from "node:os";
 
-const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // The built directory structure
@@ -121,6 +120,11 @@ ipcMain.handle("get_store", (_event, key: string) => {
 	const value = store.get(key);
 
 	return value;
+});
+
+ipcMain.handle("get_os", () => {
+	const os: NodeJS.Platform = platform();
+	return os;
 })
 
 

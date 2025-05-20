@@ -41,4 +41,8 @@ contextBridge.exposeInMainWorld("store", {
 
     getStore: (key: string) =>
         ipcRenderer.invoke("get_store", key)
+});
+
+contextBridge.exposeInMainWorld("get_os", {
+    getOS: () => ipcRenderer.invoke("get_os")
 })
