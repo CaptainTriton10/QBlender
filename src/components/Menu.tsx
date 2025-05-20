@@ -29,6 +29,7 @@ import { Separator } from "@/components/ui/separator.tsx";
 import { useHotkeys } from "react-hotkeys-hook";
 import FilePathView from "./FilePathView";
 import { Button } from "./ui/button";
+import { useState } from "react";
 
 function AppQuit() {
 	window.ipcRenderer.invoke("app_quit");
@@ -36,15 +37,23 @@ function AppQuit() {
 
 type MenuProps = {
 	handleImport: () => void;
+	handleSelectExport: () => void;
 	selectAll: () => void;
 	deselectAll: () => void;
 }
 
 function Menu(props: MenuProps) {
-	useHotkeys("ctrl+q", () => AppQuit());
+	const [open, setOpen] = useState(false);
+
+	const ToggleOpen = () => {
+		setOpen(!open);
+	}
+
+	useHotkeys("ctrl+q", AppQuit);
+	useHotkeys("p", ToggleOpen);
 
 	return (
-		<Dialog>
+		<Dialog open={open} onOpenChange={setOpen}>
 			<Menubar>
 				<MenubarMenu>
 					<MenubarTrigger>File</MenubarTrigger>
@@ -98,7 +107,7 @@ function Menu(props: MenuProps) {
 							<h3 className="my-3">Export Location</h3>
 							<div className="flex flex-row items-center justify-between">
 								<FilePathView filePath={"C:\\Documents\\Blender\\Render"} />
-								<Button>Select...</Button>
+								<Button onClick={() => props.handleSelectExport()}>Select...</Button>
 							</div>
 						</div>
 						<div>

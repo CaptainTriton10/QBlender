@@ -1,37 +1,20 @@
 import { Badge } from "./ui/badge";
 import { Breadcrumb, BreadcrumbEllipsis, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator } from "./ui/breadcrumb";
 import { useState, useEffect } from "react";
-import { Slash } from "lucide-react";
+import { ChevronsRight } from "lucide-react";
+import { GetUpdatedPath } from "@/lib/utils";
 
 type FilePathViewProps = {
     filePath: string;
 }
 
-function GetUpdatedPath(filePath: string) {
-    const path = filePath.split("\\");
-
-    console.log(path);
-
-    const updatedPath: string[] = [];
-    const length = path.length;
-
-    updatedPath.push(path[0]);
-
-    for (let i = 0; i < 2; i++) {
-        updatedPath.push(path[(length - 1) - i]);
-    }
-
-    return updatedPath;
-}
-
 function FilePathView(props: FilePathViewProps) {
-    const [path, setpath] = useState<string[]>();
+    const [path, setPath] = useState<string[] | string>();
 
     useEffect(() => {
-        const updatedPath = GetUpdatedPath(props.filePath);
+        const updatedPath: string[] | string = GetUpdatedPath(props.filePath);
 
-        setpath(updatedPath);
-        console.log(path);
+        setPath(updatedPath);
     }, [props.filePath])
 
     if (path) return (
@@ -40,15 +23,15 @@ function FilePathView(props: FilePathViewProps) {
                 <BreadcrumbList>
                     <BreadcrumbItem>{path[0]}</BreadcrumbItem>
                     <BreadcrumbSeparator>
-                        <Slash />
+                        <ChevronsRight />
                     </BreadcrumbSeparator>
                     <BreadcrumbEllipsis />
                     <BreadcrumbSeparator>
-                        <Slash />
+                        <ChevronsRight />
                     </BreadcrumbSeparator>
                     <BreadcrumbItem>{path[1]}</BreadcrumbItem>
                     <BreadcrumbSeparator>
-                        <Slash />
+                        <ChevronsRight />
                     </BreadcrumbSeparator>
                     <BreadcrumbItem>{path[2]}</BreadcrumbItem>
                 </BreadcrumbList>

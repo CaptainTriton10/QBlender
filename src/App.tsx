@@ -8,7 +8,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { AppSidebar } from "./components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
 import Render from "./handlers/RenderHandler";
-import RenderProperties from "./components/RenderProperties";
+import { GetUpdatedPathString } from "./lib/utils";
 
 let renderQueue: Render[] = [];
 
@@ -26,11 +26,21 @@ function UpdateQueue(queue: Render[], item: Render | undefined, setState: Dispat
 
 async function HandleUpload(setState: Dispatch<React.SetStateAction<RenderItem[]>>) {
 	// @ts-ignore
-	const paths = await window.open_file.openFile(true).then((paths) => {
+	const paths = await window.open_file.openFile(true).then(paths => {
 		paths.forEach((path: string) => {
 			UpdateQueue(renderQueue, new Render(path, [], ""), setState);
 		});
 	});
+}
+
+async function HandleSelectExport(setState: Dispatch<React.SetStateAction<RenderItem[]>>) {
+	// @ts-ignore
+	const path = await window.open_file.openFile(false).then(path => {
+		//TODO: update only selected
+		renderQueue[0].exportLocation = GetUpdatedPathString(path[0]);
+
+		UpdateQueue(renderQueue, undefined, setState)
+	})
 }
 
 function App() {
@@ -50,13 +60,13 @@ function App() {
 				}}>
 					<AppSidebar />
 					<main style={{ flex: 1 }}>
-						<SidebarTrigger />
-						<div className="p-3">
+						{/* <SidebarTrigger /> */}
+						<div className="p-5 flex flex-col gap-5">
 							<Menu
 								handleImport={() => HandleUpload(setData)}
+								handleSelectExport={() => HandleSelectExport(setData)}
 								selectAll={() => queueViewRef.current?.SelectAll()}
 								deselectAll={() => queueViewRef.current?.DeselectAll()} />
-							<Separator className="my-5" />
 							<QueueView ref={queueViewRef} columns={columns} data={data} />
 						</div>
 					</main>
