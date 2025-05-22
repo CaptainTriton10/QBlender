@@ -2,11 +2,11 @@ import Menu from "@/components/Menu.tsx";
 import { columns, RenderItem } from "@/components/QueueView/Columns";
 import QueueView, { QueueViewRefType } from "@/components/QueueView/QueueView";
 import { ThemeProvider } from "@/components/ThemeProvider.tsx";
-import { Separator } from "@/components/ui/separator.tsx";
-import { Dispatch, useRef, useState } from "react";
+import { Dispatch, MutableRefObject, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { AppSidebar } from "./components/AppSidebar";
-import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar";
+import { SidebarProvider } from "./components/ui/sidebar";
+import { GetFrames } from "./handlers/BlenderDataHandler";
 import Render from "./handlers/RenderHandler";
 import { GetUpdatedPathString } from "./lib/utils";
 
@@ -24,12 +24,25 @@ function UpdateQueue(queue: Render[], item: Render | undefined, setState: Dispat
 	setState(renderItems);
 }
 
-async function HandleUpload(setState: Dispatch<React.SetStateAction<RenderItem[]>>) {
+async function HandleUpload(setState: Dispatch<React.SetStateAction<RenderItem[]>>, hasRun: MutableRefObject<boolean>) {
+	const currentQueueLength = renderQueue.length;
+
 	// @ts-ignore
 	const paths = await window.open_file.openFile(true).then(paths => {
 		paths.forEach((path: string) => {
 			UpdateQueue(renderQueue, new Render(path, [], ""), setState);
 		});
+
+		for (let i = 0; i < paths.length; i++) {
+			console.log(hasRun);
+
+			GetFrames(hasRun, paths[i]).then((data: number) => {
+
+				renderQueue[i + currentQueueLength].frameCount = data;
+
+				UpdateQueue(renderQueue, undefined, setState);
+			})
+		}
 	});
 }
 
@@ -47,8 +60,9 @@ function App() {
 	const [data, setData] = useState<RenderItem[]>([]);
 
 	const queueViewRef = useRef<QueueViewRefType>(null);
+	const hasRun = useRef(false);
 
-	useHotkeys("ctrl+i", () => HandleUpload(setData));
+	useHotkeys("ctrl+i", () => HandleUpload(setData, hasRun));
 
 	return (
 		<ThemeProvider defaultTheme="dark">
@@ -63,7 +77,7 @@ function App() {
 						{/* <SidebarTrigger /> */}
 						<div className="p-5 flex flex-col gap-5">
 							<Menu
-								handleImport={() => HandleUpload(setData)}
+								handleImport={() => HandleUpload(setData, hasRun)}
 								handleSelectExport={() => HandleSelectExport(setData)}
 								selectAll={() => queueViewRef.current?.SelectAll()}
 								deselectAll={() => queueViewRef.current?.DeselectAll()} />

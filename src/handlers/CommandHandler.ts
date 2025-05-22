@@ -14,6 +14,8 @@ function RunCommand(hasRun: MutableRefObject<boolean>, command: Command, callbac
     window.run_command.onCommandStdout((data: string) => {
         callback(data);
     });
+
+    hasRun.current = false;
 }
 
 export { RunCommand };

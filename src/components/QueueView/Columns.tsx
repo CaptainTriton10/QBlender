@@ -76,37 +76,15 @@ export const columns: ColumnDef<RenderItem>[] = [
 	{
 		accessorKey: "frameCount",
 		header: "Frame Count",
+		cell: ({ row }) => {
+			const frameCount = row.original.frameCount;
+
+			if (frameCount == -1) return <Badge variant={"outline"}>Calculating...</Badge>;
+			else return (<i>{frameCount}</i>);
+		}
 	},
 	{
 		accessorKey: "exportLocation",
 		header: "Export Location",
 	}
 ];
-
-// {
-// 	accessorKey: "renderFormat",
-// 		header: "Render Format",
-// 			cell: ({ row }) => {
-// 				const _thisRow = row.original;
-
-// 				return (
-// 					<Select>
-// 						<SelectTrigger>
-// 							<SelectValue placeholder="PNG" />
-// 						</SelectTrigger>
-// 						<SelectContent>
-// 							<SelectItem value="PNG">PNG</SelectItem>
-// 							<SelectItem value="JPEG">JPEG</SelectItem>
-// 							<SelectItem value="FFMPEG">FFMPEG</SelectItem>
-// 							<SelectItem value="AVIJPEG">AVI</SelectItem>
-// 							<SelectItem value="WEBP">WEBP</SelectItem>
-// 							<SelectItem value="OPEN_EXR_MULTILAYER">
-// 								EXR Multilayer
-// 							</SelectItem>
-// 							<SelectItem value="OPEN_EXR">EXR</SelectItem>
-// 							<SelectItem value="HDR">HDR</SelectItem>
-// 						</SelectContent>
-// 					</Select>
-// 				);
-// 			},
-// 	},

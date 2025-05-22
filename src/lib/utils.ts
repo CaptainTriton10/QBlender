@@ -2,6 +2,8 @@ import { clsx, type ClassValue } from "clsx"
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge"
 
+export const blenderLocation = "C:\\Program Files\\Blender Foundation\\Blender 4.4\\blender.exe";
+
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
 }
