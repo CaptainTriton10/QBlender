@@ -106,7 +106,7 @@ function Menu(props: MenuProps) {
 						<div>
 							<h3 className="my-3">Export Location</h3>
 							<div className="flex flex-row items-center justify-between">
-								<FilePathView filePath={"C:\\Documents\\Blender\\Render"} />
+								<FilePathView filePath={"..."} />
 								<Button onClick={() => props.handleSelectExport()}>Select...</Button>
 							</div>
 						</div>

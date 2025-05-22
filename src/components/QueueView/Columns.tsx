@@ -86,5 +86,11 @@ export const columns: ColumnDef<RenderItem>[] = [
 	{
 		accessorKey: "exportLocation",
 		header: "Export Location",
+		cell: ({ row }) => {
+			const exportLocation = row.original.exportLocation;
+
+			if (exportLocation) return (<code>{exportLocation}</code>);
+			else return (<i>No export selected.</i>);
+		}
 	}
 ];

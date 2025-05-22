@@ -9,6 +9,7 @@ import { SidebarProvider } from "./components/ui/sidebar";
 import { GetFrames } from "./handlers/BlenderDataHandler";
 import Render from "./handlers/RenderHandler";
 import { GetUpdatedPathString } from "./lib/utils";
+import { toast } from "sonner";
 
 let renderQueue: Render[] = [];
 
@@ -34,8 +35,6 @@ async function HandleUpload(setState: Dispatch<React.SetStateAction<RenderItem[]
 		});
 
 		for (let i = 0; i < paths.length; i++) {
-			console.log(hasRun);
-
 			GetFrames(hasRun, paths[i]).then((data: number) => {
 
 				renderQueue[i + currentQueueLength].frameCount = data;
@@ -46,11 +45,21 @@ async function HandleUpload(setState: Dispatch<React.SetStateAction<RenderItem[]
 	});
 }
 
-async function HandleSelectExport(setState: Dispatch<React.SetStateAction<RenderItem[]>>) {
+async function HandleSelectExport(setState: Dispatch<React.SetStateAction<RenderItem[]>>, getSelectedRows: () => number[]) {
+	const selectedRenders: number[] = getSelectedRows();
+
+	if (!selectedRenders.length) {
+		toast.warning("No renders selected.");
+		return;
+	}
+
 	// @ts-ignore
 	const path = await window.open_file.openFile(false).then(path => {
-		//TODO: update only selected
-		renderQueue[0].exportLocation = GetUpdatedPathString(path[0]);
+		const exportLocation: string = GetUpdatedPathString(path[0]);
+
+		for (let i = 0; i < selectedRenders.length; i++) {
+			renderQueue[selectedRenders[i]].exportLocation = exportLocation;
+		}
 
 		UpdateQueue(renderQueue, undefined, setState)
 	})
@@ -78,7 +87,10 @@ function App() {
 						<div className="p-5 flex flex-col gap-5">
 							<Menu
 								handleImport={() => HandleUpload(setData, hasRun)}
-								handleSelectExport={() => HandleSelectExport(setData)}
+								handleSelectExport={() => HandleSelectExport(setData,
+									// @ts-expect-error shut up the dumbass compiler
+									queueViewRef.current?.GetSelectedRows
+								)}
 								selectAll={() => queueViewRef.current?.SelectAll()}
 								deselectAll={() => queueViewRef.current?.DeselectAll()} />
 							<QueueView ref={queueViewRef} columns={columns} data={data} />

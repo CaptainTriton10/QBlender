@@ -17,27 +17,55 @@ function FilePathView(props: FilePathViewProps) {
         setPath(updatedPath);
     }, [props.filePath])
 
-    if (path) return (
-        <Badge variant={"outline"}>
-            <Breadcrumb>
-                <BreadcrumbList>
-                    <BreadcrumbItem>{path[0]}</BreadcrumbItem>
-                    <BreadcrumbSeparator>
-                        <ChevronsRight />
-                    </BreadcrumbSeparator>
-                    <BreadcrumbEllipsis />
-                    <BreadcrumbSeparator>
-                        <ChevronsRight />
-                    </BreadcrumbSeparator>
-                    <BreadcrumbItem>{path[1]}</BreadcrumbItem>
-                    <BreadcrumbSeparator>
-                        <ChevronsRight />
-                    </BreadcrumbSeparator>
-                    <BreadcrumbItem>{path[2]}</BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
-        </Badge>
-    );
+    if (path) {
+        if (path.length >= 3) {
+            return (
+                <Badge variant={"outline"}>
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>{path[0]}</BreadcrumbItem>
+                            <BreadcrumbSeparator>
+                                <ChevronsRight />
+                            </BreadcrumbSeparator>
+                            <BreadcrumbEllipsis />
+                            <BreadcrumbSeparator>
+                                <ChevronsRight />
+                            </BreadcrumbSeparator>
+                            <BreadcrumbItem>{path[1]}</BreadcrumbItem>
+                            <BreadcrumbSeparator>
+                                <ChevronsRight />
+                            </BreadcrumbSeparator>
+                            <BreadcrumbItem>{path[2]}</BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                </Badge>
+            );
+        } else if (path.length == 2) {
+            return (
+                <Badge variant={"outline"}>
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>{path[0]}</BreadcrumbItem>
+                            <BreadcrumbSeparator>
+                                <ChevronsRight />
+                            </BreadcrumbSeparator>
+                            <BreadcrumbItem>{path[1]}</BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                </Badge>
+            );
+        } else {
+            return (
+                <Badge variant={"outline"}>
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem>{path[0]}</BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                </Badge>
+            )
+        }
+    }
 }
 
 export default FilePathView;

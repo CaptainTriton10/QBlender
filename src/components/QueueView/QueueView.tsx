@@ -19,6 +19,7 @@ import { useImperativeHandle, Ref, useState } from "react";
 type QueueViewRefType = {
 	SelectAll: () => void;
 	DeselectAll: () => void;
+	GetSelectedRows: () => number[];
 }
 
 type QueueViewProps<TData, TValue> = {
@@ -58,9 +59,23 @@ function QueueView<TData, TValue>(
 		}
 	}
 
+	function GetSelectedRows() {
+		const selection: string[] = Object.keys(table.getState().rowSelection);
+		if (!selection) return [];
+
+		let selectionIndices: number[] = [];
+
+		selection.forEach(row => {
+			selectionIndices.push(parseInt(row));
+		});
+
+		return selectionIndices;
+	}
+
 	useImperativeHandle(props.ref, () => ({
 		SelectAll,
-		DeselectAll
+		DeselectAll,
+		GetSelectedRows
 	}))
 
 	return (
