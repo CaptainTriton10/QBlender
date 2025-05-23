@@ -4,6 +4,7 @@ import {
 	ColumnDef,
 	flexRender,
 	getCoreRowModel,
+	getPaginationRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -14,6 +15,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { Button } from "../ui/button";
 import { useImperativeHandle, Ref, useState } from "react";
 
 type QueueViewRefType = {
@@ -23,6 +25,7 @@ type QueueViewRefType = {
 }
 
 type QueueViewProps<TData, TValue> = {
+	className?: string;
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
 	ref: Ref<QueueViewRefType>;
@@ -40,6 +43,12 @@ function QueueView<TData, TValue>(
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
+		getPaginationRowModel: getPaginationRowModel(),
+		initialState: {
+			pagination: {
+				pageSize: 5
+			}
+		},
 		enableRowSelection: true,
 		onRowSelectionChange: setRowSelection,
 		state: {
@@ -79,7 +88,7 @@ function QueueView<TData, TValue>(
 	}))
 
 	return (
-		<div className="rounded-md border">
+		<div className={props.className}>
 			<Table>
 				<TableHeader>
 					{table.getHeaderGroups().map((headerGroup) => (
@@ -129,6 +138,24 @@ function QueueView<TData, TValue>(
 					)}
 				</TableBody>
 			</Table>
+			<div className="flex justify-center gap-5">
+				<Button
+					className="bg-background"
+					variant={(table.getCanPreviousPage()) ? "secondary" : "outline"}
+					size="sm"
+					onClick={() => table.previousPage()}
+					disabled={!table.getCanPreviousPage()}>
+					Previous
+				</Button>
+				<Button
+					className="mb-auto"
+					variant={(table.getCanNextPage()) ? "outline" : "secondary"}
+					size="sm"
+					onClick={() => table.nextPage()}
+					disabled={!table.getCanNextPage()}>
+					Next
+				</Button>
+			</div>
 		</div >
 	);
 }

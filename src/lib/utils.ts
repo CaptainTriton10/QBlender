@@ -12,20 +12,8 @@ function GetUpdatedPath(filePath: string) {
     let path: string[];
     let updatedPath: string[] = [];
 
-    const os = "win32"; // TODO: Update OS platform.
+    // TODO: Update OS platform.
     path = filePath.split("\\");
-
-    // if (os === "win32") {
-    //     path = filePath.split("\\")
-
-    // } else if (os === "linux") {
-    //     path = filePath.split("/");
-    // }
-    // else {
-    //     toast("OS Unsupported.");
-    //     console.log("OS Unsupported.", os);
-    //     path = [];
-    // }
 
     const length = path.length;
 
@@ -36,13 +24,13 @@ function GetUpdatedPath(filePath: string) {
         updatedPath.push(path[length - 1]);
     }
 
-    console.log(updatedPath);
+    console.log(filePath, updatedPath);
     return updatedPath;
 }
 
 function GetUpdatedPathString(filePath: string) {
     const updatedPath = GetUpdatedPath(filePath);
-    if (updatedPath.length >= 3) return `${updatedPath[0]}/.../${updatedPath[1]}/${updatedPath[2]}`;
+    if (updatedPath.length >= 3) return `${updatedPath[0]}/.../${updatedPath[1]}/${updatedPath[2]}/`;
     else if (updatedPath.length === 2) return `${updatedPath[0]}/${updatedPath[1]}`;
 
     return updatedPath[0];

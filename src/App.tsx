@@ -10,6 +10,7 @@ import { GetFrames } from "./handlers/BlenderDataHandler";
 import Render from "./handlers/RenderHandler";
 import { GetUpdatedPathString } from "./lib/utils";
 import { toast } from "sonner";
+import RenderStatus from "./components/RenderStatus";
 
 let renderQueue: Render[] = [];
 
@@ -45,7 +46,13 @@ async function HandleUpload(setState: Dispatch<React.SetStateAction<RenderItem[]
 	});
 }
 
-async function HandleSelectExport(setState: Dispatch<React.SetStateAction<RenderItem[]>>, getSelectedRows: () => number[]) {
+async function HandleSelectExport(
+	setState: Dispatch<React.SetStateAction<RenderItem[]>>,
+	getSelectedRows: () => number[],
+	setFilePath: Dispatch<React.SetStateAction<string>>) {
+
+	// TODO: Ensure correct export location shows in properties
+
 	const selectedRenders: number[] = getSelectedRows();
 
 	if (!selectedRenders.length) {
@@ -53,9 +60,10 @@ async function HandleSelectExport(setState: Dispatch<React.SetStateAction<Render
 		return;
 	}
 
-	// @ts-ignore
+	// @ts-expect-error
 	const path = await window.open_file.openFile(false).then(path => {
 		const exportLocation: string = GetUpdatedPathString(path[0]);
+		setFilePath(path[0]);
 
 		for (let i = 0; i < selectedRenders.length; i++) {
 			renderQueue[selectedRenders[i]].exportLocation = exportLocation;
@@ -67,6 +75,7 @@ async function HandleSelectExport(setState: Dispatch<React.SetStateAction<Render
 
 function App() {
 	const [data, setData] = useState<RenderItem[]>([]);
+	const [filePath, setFilePath] = useState("...");
 
 	const queueViewRef = useRef<QueueViewRefType>(null);
 	const hasRun = useRef(false);
@@ -84,16 +93,20 @@ function App() {
 					<AppSidebar />
 					<main style={{ flex: 1 }}>
 						{/* <SidebarTrigger /> */}
-						<div className="p-5 flex flex-col gap-5">
+						<div className="p-5 flex flex-col gap-5 h-full">
 							<Menu
+								filePath={filePath}
+								setFilePath={setFilePath}
 								handleImport={() => HandleUpload(setData, hasRun)}
 								handleSelectExport={() => HandleSelectExport(setData,
 									// @ts-expect-error shut up the dumbass compiler
-									queueViewRef.current?.GetSelectedRows
+									queueViewRef.current?.GetSelectedRows,
+									setFilePath
 								)}
 								selectAll={() => queueViewRef.current?.SelectAll()}
 								deselectAll={() => queueViewRef.current?.DeselectAll()} />
-							<QueueView ref={queueViewRef} columns={columns} data={data} />
+							<QueueView ref={queueViewRef} columns={columns} data={data} className="rounded-md border flex-grow" />
+							<RenderStatus className="mt-auto rounded-md border h-30 bg-muted" />
 						</div>
 					</main>
 				</div>

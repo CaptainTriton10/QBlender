@@ -18,18 +18,18 @@ import {
 	// MenubarShortcut,
 	MenubarTrigger,
 } from "@/components/ui/menubar";
-import {
-	Select,
-	SelectTrigger,
-	SelectValue,
-	SelectItem,
-	SelectContent
-} from "./ui/select";
 import { Separator } from "@/components/ui/separator.tsx";
+import { Dispatch, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import FilePathView from "./FilePathView";
 import { Button } from "./ui/button";
-import { useState } from "react";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue
+} from "./ui/select";
 
 function AppQuit() {
 	window.ipcRenderer.invoke("app_quit");
@@ -40,12 +40,14 @@ type MenuProps = {
 	handleSelectExport: () => void;
 	selectAll: () => void;
 	deselectAll: () => void;
+	filePath: string;
+	setFilePath: Dispatch<React.SetStateAction<string>>;
 }
 
 function Menu(props: MenuProps) {
 	const [open, setOpen] = useState(false);
 
-	const ToggleOpen = () => {
+	function ToggleOpen() {
 		setOpen(!open);
 	}
 
@@ -106,7 +108,7 @@ function Menu(props: MenuProps) {
 						<div>
 							<h3 className="my-3">Export Location</h3>
 							<div className="flex flex-row items-center justify-between">
-								<FilePathView filePath={"..."} />
+								<FilePathView filePath={props.filePath} />
 								<Button onClick={() => props.handleSelectExport()}>Select...</Button>
 							</div>
 						</div>
@@ -117,7 +119,7 @@ function Menu(props: MenuProps) {
 					</div>
 					<DialogFooter>
 						<DialogClose asChild>
-							<Button>Save</Button>
+							<Button>Close</Button>
 						</DialogClose>
 					</DialogFooter>
 				</DialogHeader>
