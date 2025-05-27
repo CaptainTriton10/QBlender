@@ -75,12 +75,12 @@ app.on("activate", () => {
 	}
 });
 
-ipcMain.handle("open_file", async (_event, isFolder: boolean, fileExtensions: string[]) => {
+ipcMain.handle("open_file", async (_event, isFile: boolean, fileExtensions: string[]) => {
 	const options: Electron.OpenDialogOptions = {
-		properties: [(isFolder) ? "openFile" : "openDirectory"]
+		properties: [(isFile) ? "openFile" : "openDirectory"]
 	};
 
-	if (isFolder) options.properties?.push("multiSelections");
+	if (isFile) options.properties?.push("multiSelections");
 	if (fileExtensions) options.filters = [{name: `${fileExtensions[0]} ... extensions`, extensions: fileExtensions}];
 
 	const {canceled, filePaths} = await dialog.showOpenDialog(options);

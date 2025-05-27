@@ -23,7 +23,7 @@ async function GetFrames(hasRun: MutableRefObject<boolean>, blendFile: string) {
             }
         }
 
-        RunCommand(hasRun, command, processData);
+        RunCommand(hasRun, command, processData, () => reject("Command error."));
     })
 }
 

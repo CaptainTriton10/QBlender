@@ -1,10 +1,14 @@
+import { GetStore } from "@/handlers/StoreHandler";
 import { clsx, type ClassValue } from "clsx";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 
 // @ts-expect-error
 export const os = await window.get_os.getOS();
-export const blenderLocation = "blender";
+export let blenderLocation: string;
+
+blenderLocation = await GetStore("blender_location");
+if (!blenderLocation) blenderLocation = "undefined";
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
@@ -13,8 +17,6 @@ function cn(...inputs: ClassValue[]) {
 function GetUpdatedPath(filePath: string) {
     let path: string[];
     let updatedPath: string[] = [];
-
-    console.log(os, os == "linux");
 
     if (os == "windows") path = filePath.split("\\");
     else if (os == "linux") path = filePath.split("/");
@@ -33,7 +35,6 @@ function GetUpdatedPath(filePath: string) {
         updatedPath.push(path[length - 1]);
     }
 
-    console.log(filePath, updatedPath);
     return updatedPath;
 }
 

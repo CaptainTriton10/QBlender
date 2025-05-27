@@ -8,9 +8,10 @@ import { AppSidebar } from "./components/AppSidebar";
 import { SidebarProvider } from "./components/ui/sidebar";
 import { GetFrames } from "./handlers/BlenderDataHandler";
 import Render from "./handlers/RenderHandler";
-import { GetUpdatedPath, GetUpdatedPathString } from "./lib/utils";
+import { blenderLocation, GetUpdatedPath, GetUpdatedPathString } from "./lib/utils";
 import { toast } from "sonner";
 import RenderStatus from "./components/RenderStatus";
+import { SetStore } from "./handlers/StoreHandler";
 
 let renderQueue: Render[] = [];
 
@@ -89,6 +90,13 @@ async function HandleSelectExport(
 	});
 }
 
+async function HandleSelectBlenderLocation() {
+	// @ts-expect-error
+	const path = await window.open_file.openFile(true, [""]).then(path => {
+		SetStore("blender_location", path[0]);
+	})
+}
+
 function App() {
 	const [data, setData] = useState<RenderItem[]>([]);
 	const [filePath, setFilePath] = useState("...");
@@ -114,6 +122,7 @@ function App() {
 								filePath={filePath}
 								setFilePath={setFilePath}
 								handleImport={() => HandleUpload(setData, hasRun)}
+								handleSelectBlenderLocation={() => HandleSelectBlenderLocation()}
 								handleSelectExport={() => HandleSelectExport(setData,
 									// @ts-expect-error shut up the dumbass compiler
 									queueViewRef.current?.GetSelectedRows,
