@@ -75,23 +75,20 @@ app.on("activate", () => {
 	}
 });
 
-ipcMain.handle("open_file", async (_event, isFolder: boolean) => {
-	if (isFolder) {
-		const { canceled, filePaths } = await dialog.showOpenDialog({
-			properties: ["openFile", "multiSelections"],
-			filters: [{ name: "Blender Files", extensions: ["blend"] }],
-		});
+ipcMain.handle("open_file", async (_event, isFolder: boolean, fileExtensions: string[]) => {
+	const options: Electron.OpenDialogOptions = {
+		properties: [(isFolder) ? "openFile" : "openDirectory"]
+	};
 
-		if (canceled) return null;
-		return filePaths;
+	if (isFolder) options.properties?.push("multiSelections");
+	if (fileExtensions) options.filters = [{name: `${fileExtensions[0]} ... extensions`, extensions: fileExtensions}];
 
-	} else {
-		const { canceled, filePaths } = await dialog.showOpenDialog({
-			properties: ["openDirectory"]
-		});
-		if (canceled) return null;
-		return filePaths;
-	}
+	const {canceled, filePaths} = await dialog.showOpenDialog(options);
+
+	console.log(options);
+
+	if (canceled) return null;
+	return filePaths;
 });
 
 ipcMain.handle("app_quit", () => {
@@ -107,8 +104,9 @@ ipcMain.on("run_command", (event, command: string, args: string[]) => {
 		event.sender.send("stdout", String(data));
 	});
 
-	child.stderr.on("error", (error) => {
-		event.sender.send("stderr", String(error));
+	child.on("error", (error) => {
+		event.sender.send("stderr", String(error))
+		console.log("stderr: ", error);
 	})
 });
 
@@ -124,8 +122,17 @@ ipcMain.handle("get_store", (_event, key: string) => {
 
 ipcMain.handle("get_os", () => {
 	const os: NodeJS.Platform = platform();
-	return os;
+	switch (os) {
+		case "win32": {
+			return "windows";
+		} case "linux": {
+			return "linux";
+		} case "darwin": {
+			return "macos";
+		} default: {
+			return "unknown";
+		}
+	};
 })
-
 
 app.whenReady().then(createWindow);

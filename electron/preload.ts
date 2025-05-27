@@ -24,15 +24,20 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 })
 
 contextBridge.exposeInMainWorld('open_file', {
-    openFile: (isFolder: boolean) => ipcRenderer.invoke('open_file', isFolder)
+    openFile: (isFolder: boolean, fileExtensions: string[]) => ipcRenderer.invoke('open_file', isFolder, fileExtensions)
 });
 
 contextBridge.exposeInMainWorld("run_command", {
     runCommand: (command: string, args: string[]) =>
         ipcRenderer.send("run_command", command, args),
 
-    onCommandStdout: (callback: Function) =>
+    onCommandStdout: (callback: Function) => {
         ipcRenderer.on("stdout", (_event, data) => callback(data))
+    },
+
+    onCommandStderr: (callback: Function) => {
+        ipcRenderer.on("stderr", (_event, error) => callback(error))
+    }
 });
 
 contextBridge.exposeInMainWorld("store", {
