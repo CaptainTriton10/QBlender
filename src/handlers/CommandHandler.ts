@@ -1,19 +1,29 @@
 import { MutableRefObject } from "react";
 import { Command } from "../types.ts";
 
-type CommandCallback = (data: string) => void;
+function RunCommand(
+    hasRun: MutableRefObject<boolean>, 
+    command: Command, 
+    callback: (data: string) => void, 
+    errorCallback?: () => void) {
 
-function RunCommand(hasRun: MutableRefObject<boolean>, command: Command, callback: CommandCallback) {
+
     if (hasRun.current) { return; }
     hasRun.current = true;
 
-    // @ts-ignore
+    // @ts-expect-error
     window.run_command.runCommand(command.command, command.args);
 
-    // @ts-ignore
+    // @ts-expect-error
     window.run_command.onCommandStdout((data: string) => {
         callback(data);
     });
+
+    // @ts-expect-error
+    window.run_command.onCommandStderr((error: string) => {
+        console.log(error)
+        if (errorCallback) errorCallback();
+    })
 
     hasRun.current = false;
 }

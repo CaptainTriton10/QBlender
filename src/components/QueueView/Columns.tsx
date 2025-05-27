@@ -80,6 +80,7 @@ export const columns: ColumnDef<RenderItem>[] = [
 			const frameCount = row.original.frameCount;
 
 			if (frameCount == -1) return <Badge variant={"outline"}>Calculating...</Badge>;
+			else if (frameCount == -2) return <Badge variant={"destructive"}>Error</Badge>;
 			else return (<i>{frameCount}</i>);
 		}
 	},

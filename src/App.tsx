@@ -8,7 +8,7 @@ import { AppSidebar } from "./components/AppSidebar";
 import { SidebarProvider } from "./components/ui/sidebar";
 import { GetFrames } from "./handlers/BlenderDataHandler";
 import Render from "./handlers/RenderHandler";
-import { GetUpdatedPathString } from "./lib/utils";
+import { GetUpdatedPath, GetUpdatedPathString } from "./lib/utils";
 import { toast } from "sonner";
 import RenderStatus from "./components/RenderStatus";
 
@@ -30,18 +30,34 @@ async function HandleUpload(setState: Dispatch<React.SetStateAction<RenderItem[]
 	const currentQueueLength = renderQueue.length;
 
 	// @ts-ignore
-	const paths = await window.open_file.openFile(true).then(paths => {
+	const paths = await window.open_file.openFile(true, ["blend"]).then(paths => {
 		paths.forEach((path: string) => {
-			UpdateQueue(renderQueue, new Render(path, [], ""), setState);
+			const pathArray = GetUpdatedPath(path);
+			const fileName = pathArray[pathArray.length - 1];
+			
+			UpdateQueue(renderQueue, new Render(fileName, [], ""), setState);
 		});
 
+		let errorShown = false;
 		for (let i = 0; i < paths.length; i++) {
-			GetFrames(hasRun, paths[i]).then((data: number) => {
+			GetFrames(hasRun, paths[i]).then(
+				function(data: number) {
+					renderQueue[i + currentQueueLength].frameCount = data;
+	
+					UpdateQueue(renderQueue, undefined, setState);
+				},
 
-				renderQueue[i + currentQueueLength].frameCount = data;
+				function(error: string) {
+					console.log(error);
+					
+					if (!errorShown) toast.error("An error occured with blender, check your selected blender location.");
+					errorShown = true;
+					
+					renderQueue[i + currentQueueLength].frameCount = -2;
 
-				UpdateQueue(renderQueue, undefined, setState);
-			})
+					UpdateQueue(renderQueue, undefined, setState);
+				}
+			)
 		}
 	});
 }
@@ -69,8 +85,8 @@ async function HandleSelectExport(
 			renderQueue[selectedRenders[i]].exportLocation = exportLocation;
 		}
 
-		UpdateQueue(renderQueue, undefined, setState)
-	})
+		UpdateQueue(renderQueue, undefined, setState);
+	});
 }
 
 function App() {
