@@ -4,18 +4,18 @@ import QueueView, { QueueViewRefType } from "@/components/QueueView/QueueView";
 import { ThemeProvider } from "@/components/ThemeProvider.tsx";
 import { Dispatch, MutableRefObject, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import { toast } from "sonner";
 import { AppSidebar } from "./components/AppSidebar";
+import RenderStatus from "./components/RenderStatus";
 import { SidebarProvider } from "./components/ui/sidebar";
 import { GetFrames } from "./handlers/BlenderDataHandler";
 import Render from "./handlers/RenderHandler";
-import { blenderLocation, GetUpdatedPath, GetUpdatedPathString } from "./lib/utils";
-import { toast } from "sonner";
-import RenderStatus from "./components/RenderStatus";
 import { SetStore } from "./handlers/StoreHandler";
+import { GetUpdatedPath, GetUpdatedPathString } from "./lib/utils";
 
 let renderQueue: Render[] = [];
 
-function UpdateQueue(queue: Render[], item: Render | undefined, setState: Dispatch<React.SetStateAction<RenderItem[]>>) {
+function UpdateQueue(queue: Render[], setState: Dispatch<React.SetStateAction<RenderItem[]>>, item?: Render) {
 	if (item) queue.push(item);
 
 	let renderItems: RenderItem[] = [];
@@ -35,28 +35,28 @@ async function HandleUpload(setState: Dispatch<React.SetStateAction<RenderItem[]
 		paths.forEach((path: string) => {
 			const pathArray = GetUpdatedPath(path);
 			const fileName = pathArray[pathArray.length - 1];
-			
-			UpdateQueue(renderQueue, new Render(fileName, [], ""), setState);
+
+			UpdateQueue(renderQueue, setState, new Render(fileName, [], ""));
 		});
 
 		let errorShown = false;
 		for (let i = 0; i < paths.length; i++) {
 			GetFrames(hasRun, paths[i]).then(
-				function(data: number) {
+				function (data: number) {
 					renderQueue[i + currentQueueLength].frameCount = data;
-	
-					UpdateQueue(renderQueue, undefined, setState);
+
+					UpdateQueue(renderQueue, setState);
 				},
 
-				function(error: string) {
+				function (error: string) {
 					console.log(error);
-					
+
 					if (!errorShown) toast.error("An error occured with blender, check your selected blender location.");
 					errorShown = true;
-					
+
 					renderQueue[i + currentQueueLength].frameCount = -2;
 
-					UpdateQueue(renderQueue, undefined, setState);
+					UpdateQueue(renderQueue, setState);
 				}
 			)
 		}
@@ -86,7 +86,7 @@ async function HandleSelectExport(
 			renderQueue[selectedRenders[i]].exportLocation = exportLocation;
 		}
 
-		UpdateQueue(renderQueue, undefined, setState);
+		UpdateQueue(renderQueue, setState);
 	});
 }
 
@@ -95,6 +95,26 @@ async function HandleSelectBlenderLocation() {
 	const path = await window.open_file.openFile(true, [""]).then(path => {
 		SetStore("blender_location", path[0]);
 	})
+}
+
+async function RenderAll(setState: Dispatch<React.SetStateAction<RenderItem[]>>, hasRun: React.MutableRefObject<boolean>) {
+	function Callback(data: string) {
+		console.log(data);
+	}
+
+	function ClosedCallback() {
+		toast.info("Render completed.")
+	}
+
+	function ErrorCallback(filename: string) {
+		UpdateQueue(renderQueue, setState);
+		toast.error(`Error with render: ${filename}`)
+	}
+
+	for (let i = 0; i < renderQueue.length; i++) {
+		renderQueue[i].Render(hasRun, Callback, ClosedCallback, ErrorCallback);
+		UpdateQueue(renderQueue, setState);
+	}
 }
 
 function App() {
@@ -128,6 +148,7 @@ function App() {
 									queueViewRef.current?.GetSelectedRows,
 									setFilePath
 								)}
+								renderAll={() => RenderAll(setData, hasRun)}
 								selectAll={() => queueViewRef.current?.SelectAll()}
 								deselectAll={() => queueViewRef.current?.DeselectAll()} />
 							<QueueView ref={queueViewRef} columns={columns} data={data} className="rounded-md border flex-grow" />

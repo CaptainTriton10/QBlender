@@ -1,6 +1,7 @@
 import { RenderItem } from "@/components/QueueView/Columns";
 import { blenderLocation } from "@/lib/utils";
 import { Command } from "@/types.ts";
+import { RunCommand } from "./CommandHandler";
 
 
 class Render {
@@ -25,8 +26,6 @@ class Render {
             command.args.push(arg);
         });
 
-        console.log(command);
-
         return command;
     }
 
@@ -35,7 +34,7 @@ class Render {
 
         let renderItem: RenderItem = {
             file: splitFilename[splitFilename.length - 1].slice(0, -6),
-            status: "Not Started",
+            status: this.status,
             frameCount: this.frameCount,
             exportLocation: this.exportLocation
         };
@@ -43,12 +42,34 @@ class Render {
         return renderItem;
     }
 
-    public Render() {
+    public async Render(
+        hasRun: React.MutableRefObject<boolean>,
+        callback: (data: string) => void,
+        closedCallback: () => void,
+        errorCallback: (filename: string) => void
+    ) {
 
+        const command = this.Command();
+        console.log("Rendering blender file: ", this.filename);
+
+        this.status = "In Progress";
+
+        const testCommand: Command = {
+            command: "ping",
+            args: ["-c", "4", "google.com"]
+        }
+
+        RunCommand(hasRun, testCommand, callback, () => {
+            closedCallback();
+            this.status = "Completed";
+        }, () => {
+            errorCallback(this.filename);
+            this.status = "Error";
+        });
     }
 
     public ToString() {
-        let command: string = `./\"${blenderLocation}\" -b \"${this.filename}\"`;
+        let command: string = `\"${blenderLocation}\" -b \"${this.filename}\"`;
 
         this.args.forEach(arg => {
             command += ` ${arg}`;

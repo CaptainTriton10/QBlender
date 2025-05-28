@@ -40,6 +40,7 @@ type MenuProps = {
 	handleImport: () => void;
 	handleSelectExport: () => void;
 	handleSelectBlenderLocation: () => void;
+	renderAll: () => void;
 	selectAll: () => void;
 	deselectAll: () => void;
 	filePath: string;
@@ -63,7 +64,7 @@ function Menu(props: MenuProps) {
 				<MenubarMenu>
 					<MenubarTrigger>File</MenubarTrigger>
 					<MenubarContent>
-						<MenubarItem onClick={() => props.handleImport()}>
+						<MenubarItem onClick={props.handleImport}>
 							Import<MenubarShortcut>Ctrl+I</MenubarShortcut>
 						</MenubarItem>
 						<MenubarItem onClick={AppQuit}>
@@ -81,10 +82,10 @@ function Menu(props: MenuProps) {
 				<MenubarMenu>
 					<MenubarTrigger>Edit</MenubarTrigger>
 					<MenubarContent>
-						<MenubarItem onClick={() => props.selectAll()}>
+						<MenubarItem onClick={props.selectAll}>
 							Select All<MenubarShortcut>A</MenubarShortcut>
 						</MenubarItem>
-						<MenubarItem onClick={() => props.deselectAll()}>
+						<MenubarItem onClick={props.deselectAll}>
 							Deselect All<MenubarShortcut>Alt+A</MenubarShortcut>
 						</MenubarItem>
 						<MenubarSeparator className="mx-1" />
@@ -99,14 +100,14 @@ function Menu(props: MenuProps) {
 				<MenubarMenu>
 					<MenubarTrigger>Render</MenubarTrigger>
 					<MenubarContent>
-						<MenubarItem>Render All</MenubarItem>
+						<MenubarItem onClick={props.renderAll}>Render All</MenubarItem>
 						<MenubarItem>Render Selection</MenubarItem>
 						<MenubarSeparator className="mx-1" />
 						<MenubarItem>Stop Render</MenubarItem>
 					</MenubarContent>
 				</MenubarMenu>
 			</Menubar>
-			<MenuDialog menuProps={props} dialogState={dialogState}/>
+			<MenuDialog menuProps={props} dialogState={dialogState} />
 		</Dialog>
 	);
 }
