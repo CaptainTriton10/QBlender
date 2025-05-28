@@ -81,9 +81,9 @@ ipcMain.handle("open_file", async (_event, isFile: boolean, fileExtensions: stri
 	};
 
 	if (isFile) options.properties?.push("multiSelections");
-	if (fileExtensions) options.filters = [{name: `${fileExtensions[0]} ... extensions`, extensions: fileExtensions}];
+	if (fileExtensions) options.filters = [{ name: `${fileExtensions[0]} ... extensions`, extensions: fileExtensions }];
 
-	const {canceled, filePaths} = await dialog.showOpenDialog(options);
+	const { canceled, filePaths } = await dialog.showOpenDialog(options);
 
 	console.log(options);
 
@@ -105,8 +105,13 @@ ipcMain.on("run_command", (event, command: string, args: string[]) => {
 	});
 
 	child.on("error", (error) => {
-		event.sender.send("stderr", String(error))
+		event.sender.send("stderr", String(error));
 		console.log("stderr: ", error);
+	});
+
+	child.stdout.on("close", () => {
+		event.sender.send("closed");
+		console.log(`${command} closed.`)
 	})
 });
 

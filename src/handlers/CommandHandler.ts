@@ -2,9 +2,10 @@ import { MutableRefObject } from "react";
 import { Command } from "../types.ts";
 
 function RunCommand(
-    hasRun: MutableRefObject<boolean>, 
-    command: Command, 
-    callback: (data: string) => void, 
+    hasRun: MutableRefObject<boolean>,
+    command: Command,
+    callback: (data: string) => void,
+    closedCallback?: () => void,
     errorCallback?: () => void) {
 
 
@@ -24,6 +25,9 @@ function RunCommand(
         console.log(error)
         if (errorCallback) errorCallback();
     })
+
+    //@ts-expect-error
+    window.run_command.onCommandClosed(() => { if (closedCallback) closedCallback() });
 
     hasRun.current = false;
 }
