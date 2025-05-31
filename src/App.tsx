@@ -11,7 +11,7 @@ import { SidebarProvider } from "./components/ui/sidebar";
 import { GetFrames } from "./handlers/BlenderDataHandler";
 import Render from "./handlers/RenderHandler";
 import { SetStore } from "./handlers/StoreHandler";
-import { GetUpdatedPath, GetUpdatedPathString } from "./lib/utils";
+import { GetUpdatedPath, os } from "./lib/utils";
 
 let renderQueue: Render[] = [];
 
@@ -32,23 +32,25 @@ async function HandleUpload(setState: Dispatch<React.SetStateAction<RenderItem[]
 
 	// @ts-ignore
 	const paths = await window.open_file.openFile(true, ["blend"]).then(paths => {
-		paths.forEach((path: string) => {
+		paths.forEach((path: string) => { // Loop over each uploaded file
 			const pathArray = GetUpdatedPath(path);
 			const fileName = pathArray[pathArray.length - 1];
 
-			UpdateQueue(renderQueue, setState, new Render(fileName, [], ""));
+			const temporaryPath = (os == "windows") ? ["C:", "tmp"] : ["tmp"];
+
+			UpdateQueue(renderQueue, setState, new Render(fileName, temporaryPath));
 		});
 
 		let errorShown = false;
-		for (let i = 0; i < paths.length; i++) {
+		for (let i = 0; i < paths.length; i++) { // Loop over each uploaded file
 			GetFrames(hasRun, paths[i]).then(
-				function (data: number) {
+				function (data: number) { // If successful
 					renderQueue[i + currentQueueLength].frameCount = data;
 
 					UpdateQueue(renderQueue, setState);
 				},
 
-				function (error: string) {
+				function (error: string) { // If error occurs
 					console.log(error);
 
 					if (!errorShown) toast.error("An error occured with blender, check your selected blender location.");
@@ -79,7 +81,7 @@ async function HandleSelectExport(
 
 	// @ts-expect-error
 	const path = await window.open_file.openFile(false).then(path => {
-		const exportLocation: string = GetUpdatedPathString(path[0]);
+		const exportLocation: string[] = path[0];
 		setFilePath(path[0]);
 
 		for (let i = 0; i < selectedRenders.length; i++) {

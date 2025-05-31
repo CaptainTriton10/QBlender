@@ -85,8 +85,6 @@ ipcMain.handle("open_file", async (_event, isFile: boolean, fileExtensions: stri
 
 	const { canceled, filePaths } = await dialog.showOpenDialog(options);
 
-	console.log(options);
-
 	if (canceled) return null;
 	return filePaths;
 });
@@ -98,7 +96,7 @@ ipcMain.handle("app_quit", () => {
 ipcMain.on("run_command", (event, command: string, args: string[]) => {
 	const child = spawn(command, args);
 
-	console.log(`Running: ${command}`);
+	console.log(`Running: ${command} with args: ${args}`);
 
 	child.stdout.on("data", (data) => {
 		event.sender.send("stdout", String(data));

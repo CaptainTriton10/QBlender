@@ -38,8 +38,9 @@ function GetUpdatedPath(filePath: string) {
     return updatedPath;
 }
 
-function GetUpdatedPathString(filePath: string) {
-    const updatedPath = GetUpdatedPath(filePath);
+function GetUpdatedPathString(filePath: string | string[]) {
+    const updatedPath = (typeof filePath == "string") ? GetUpdatedPath(filePath) : filePath;
+
     if (updatedPath.length >= 3) return `${updatedPath[0]}/.../${updatedPath[1]}/${updatedPath[2]}`;
     else if (updatedPath.length === 2) return `${updatedPath[0]}/${updatedPath[1]}`;
 

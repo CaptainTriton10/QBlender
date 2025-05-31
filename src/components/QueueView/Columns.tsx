@@ -5,12 +5,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { ColumnDef } from "@tanstack/react-table";
 import { useHotkeys } from "react-hotkeys-hook";
+import { GetUpdatedPathString } from "@/lib/utils";
 
 export type RenderItem = {
 	file: string;
 	status: "Not Started" | "In Progress" | "Completed" | "Error";
 	frameCount: number;
-	exportLocation: string;
+	exportLocation: string[];
 };
 
 export const columns: ColumnDef<RenderItem>[] = [
@@ -88,7 +89,7 @@ export const columns: ColumnDef<RenderItem>[] = [
 		accessorKey: "exportLocation",
 		header: "Export Location",
 		cell: ({ row }) => {
-			const exportLocation = row.original.exportLocation;
+			const exportLocation = GetUpdatedPathString(row.original.exportLocation);
 
 			if (exportLocation) return (<code>{exportLocation}</code>);
 			else return (<i>No export selected.</i>);
