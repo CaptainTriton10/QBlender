@@ -14,7 +14,6 @@ function FilePathView(props: FilePathViewProps) {
     useEffect(() => {
         const updatedPath: string[] | string = GetUpdatedPath(props.filePath);
 
-        console.log(updatedPath);
         setPath(updatedPath);
     }, [props.filePath])
 

@@ -5,7 +5,7 @@ type RenderStatusProps = {
 function RenderStatus(props: RenderStatusProps) {
     return (
         <div className={props.className}>
-
+            
         </div>
     )
 }

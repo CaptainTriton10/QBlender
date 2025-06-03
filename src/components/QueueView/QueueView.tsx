@@ -138,7 +138,7 @@ function QueueView<TData, TValue>(
 					)}
 				</TableBody>
 			</Table>
-			<div className="flex justify-center gap-5">
+			<div className="flex justify-center gap-5 my-5">
 				<Button
 					className="bg-background"
 					variant={(table.getCanPreviousPage()) ? "secondary" : "outline"}
@@ -149,7 +149,7 @@ function QueueView<TData, TValue>(
 				</Button>
 				<Button
 					className="mb-auto"
-					variant={(table.getCanNextPage()) ? "outline" : "secondary"}
+					variant={(table.getCanNextPage()) ? "secondary" : "outline"}
 					size="sm"
 					onClick={() => table.nextPage()}
 					disabled={!table.getCanNextPage()}>
