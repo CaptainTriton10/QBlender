@@ -1,13 +1,9 @@
 type RenderStatusProps = {
-    className?: string;
-}
+  className?: string;
+};
 
 function RenderStatus(props: RenderStatusProps) {
-    return (
-        <div className={props.className}>
-            
-        </div>
-    )
+  return <div className={props.className}></div>;
 }
 
 export default RenderStatus;
