@@ -86,6 +86,13 @@ class Render {
         });
     }
 
+    public CloneWith(updates: Partial<Render>) {
+        return Object.assign(
+            Object.create(Object.getPrototypeOf(this)),
+            { ...this, ...updates }
+        );
+    }
+
     /**@deprecated */
     public ToString() {
         let command: string = `\"${blenderLocation}\" -b \"${this.filename}\"`;
