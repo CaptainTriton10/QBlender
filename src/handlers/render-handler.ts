@@ -71,28 +71,14 @@ class Render {
     hasRun: React.MutableRefObject<boolean>,
     callback: (data: string) => void,
     closedCallback: () => void,
-    errorCallback: (filename: string) => void,
+    errorCallback: () => void,
   ) {
     const command = this.command();
     console.log('Rendering blender file: ', this.filename);
 
     console.log(command);
 
-    this.status = 'In Progress';
-
-    runCommand(
-      hasRun,
-      command,
-      callback,
-      () => {
-        closedCallback();
-        this.status = 'Completed';
-      },
-      () => {
-        errorCallback(this.filename);
-        this.status = 'Error';
-      },
-    );
+    runCommand(hasRun, command, callback, closedCallback, errorCallback);
   }
 
   public cloneWith(updates: Partial<Render>) {

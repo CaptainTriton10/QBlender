@@ -1,12 +1,11 @@
 import Menu from '@/components/Menu.tsx';
-import { columns } from './components/QueueView/columns';
 import QueueView, { QueueViewRefType } from '@/components/QueueView/QueueView';
 import { ThemeProvider } from '@/components/ThemeProvider.tsx';
 import { useEffect, useReducer, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { toast } from 'sonner';
 import { AppSidebar } from './components/AppSidebar';
-import RenderStatus from './components/RenderStatus';
+import { columns } from './components/QueueView/columns';
 import { SidebarProvider } from './components/ui/sidebar';
 import { getFrames } from './handlers/blender-data-handler';
 import Render from './handlers/render-handler';
@@ -114,21 +113,64 @@ function App() {
   }
 
   async function renderAll() {
+    let startedRenders: boolean[] = new Array(renderQueue.length).fill(false);
+
     function callback(data: string) {
       console.log(data);
     }
 
-    function closedCallback() {
+    function closedCallback(index: number) {
       toast.info('Render completed.');
+      dispatch({
+        type: 'update_render',
+        index: index,
+        updates: {
+          status: 'Completed',
+        },
+      });
+
+      if (index + 1 < renderQueue.length && !startedRenders[index + 1]) {
+        console.log(index, index + 1);
+        propagateRender(index + 1);
+      }
     }
 
-    function errorCallback(filename: string) {
-      toast.error(`Error with render: ${filename}`);
+    function errorCallback(index: number) {
+      toast.error(`Error with render: ${renderQueue[index].filename}`);
+      dispatch({
+        type: 'update_render',
+        index: index,
+        updates: {
+          status: 'Error',
+        },
+      });
     }
 
-    for (let i = 0; i < renderQueue.length; i++) {
-      renderQueue[i].render(hasRun, callback, closedCallback, errorCallback);
+    function propagateRender(index: number) {
+      // Ensure render hasn't already been started
+      if (startedRenders[index]) return;
+      startedRenders[index] = true;
+
+      // Set the render to be "In Progress" before the render start
+      dispatch({
+        type: 'update_render',
+        index: index,
+        updates: {
+          status: 'In Progress',
+        },
+      });
+
+      // Render with callbacks
+      renderQueue[index].render(
+        hasRun,
+        callback,
+        () => closedCallback(index),
+        () => errorCallback(index),
+      );
     }
+
+    // Start the first render (index 0)
+    propagateRender(0);
   }
 
   useHotkeys('ctrl+i', handleUpload);
@@ -163,7 +205,7 @@ function App() {
                 data={data}
                 className="rounded-md border flex-grow"
               />
-              <RenderStatus className="mt-auto rounded-md border h-30 bg-muted" />
+              {/* <RenderStatus className="mt-auto rounded-md border h-40 bg-background" /> */}
             </div>
           </main>
         </div>
