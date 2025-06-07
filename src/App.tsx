@@ -23,7 +23,7 @@ async function handleSelectBlenderLocation() {
 
 function App() {
   const [data, setData] = useState<RenderItem[]>([]);
-  const [filePath, setFilePath] = useState('...');
+  const [filepath, setFilepath] = useState('...');
 
   const [renderQueue, dispatch] = useReducer(renderQueueReducer, []);
 
@@ -45,14 +45,11 @@ function App() {
     const paths = await window.open_file.openFile(true, ['blend']).then((paths) => {
       paths.forEach((path: string) => {
         // Loop over each uploaded file
-        const pathArray = getUpdatedPath(path);
-        const fileName = pathArray[pathArray.length - 1];
-
-        const temporaryPath = os == 'windows' ? ['C:', 'tmp'] : ['tmp'];
+        const temporaryPath = os == 'windows' ? 'C:\\tmp' : '/tmp';
 
         dispatch({
           type: 'add_render',
-          render: new Render(fileName, temporaryPath),
+          render: new Render(path, temporaryPath, 1),
         });
       });
 
@@ -100,13 +97,13 @@ function App() {
     // @ts-expect-error
     const path = await window.open_file.openFile(false).then((path) => {
       const exportLocation: string[] = path[0];
-      setFilePath(path[0]);
+      setFilepath(path[0]);
 
       for (let i = 0; i < selectedRenders.length; i++) {
         dispatch({
           type: 'update_render',
           index: i,
-          updates: { exportLocation: exportLocation },
+          updates: { exportLocation: exportLocation.join('\\') },
         });
       }
     });
@@ -136,7 +133,7 @@ function App() {
     }
 
     function errorCallback(index: number) {
-      toast.error(`Error with render: ${renderQueue[index].filename}`);
+      toast.error(`Error with render: ${renderQueue[index].filepath}`);
       dispatch({
         type: 'update_render',
         index: index,
@@ -190,8 +187,8 @@ function App() {
             {/* <SidebarTrigger /> */}
             <div className="p-5 flex flex-col gap-5 h-full">
               <Menu
-                filePath={filePath}
-                setFilePath={setFilePath}
+                filePath={filepath}
+                setFilePath={setFilepath}
                 handleImport={handleUpload}
                 handleSelectBlenderLocation={() => handleSelectBlenderLocation()}
                 handleSelectExport={() => handleSelectExport()}

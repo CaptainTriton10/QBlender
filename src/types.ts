@@ -7,7 +7,7 @@ type RenderItem = {
   file: string;
   status: 'Not Started' | 'In Progress' | 'Completed' | 'Error';
   frameCount: number;
-  exportLocation: string[];
+  exportLocation: string;
 };
 
 export type { Command, RenderItem };

@@ -14,12 +14,12 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-function getUpdatedPath(filePath: string) {
+function getUpdatedPath(filepath: string) {
   let path: string[];
   let updatedPath: string[] = [];
 
-  if (os == 'windows') path = filePath.split('\\');
-  else if (os == 'linux') path = filePath.split('/');
+  if (os == 'windows') path = filepath.split('\\');
+  else if (os == 'linux') path = filepath.split('/');
   else {
     path = ['error'];
     toast.warning('OS unsupported.');
@@ -38,8 +38,8 @@ function getUpdatedPath(filePath: string) {
   return updatedPath;
 }
 
-function getUpdatedPathString(filePath: string | string[]) {
-  const updatedPath = typeof filePath == 'string' ? getUpdatedPath(filePath) : filePath;
+function getUpdatedPathString(filepath: string | string[]) {
+  const updatedPath = typeof filepath == 'string' ? getUpdatedPath(filepath) : filepath;
 
   if (updatedPath.length >= 3) return `${updatedPath[0]}/.../${updatedPath[1]}/${updatedPath[2]}`;
   else if (updatedPath.length === 2) return `${updatedPath[0]}/${updatedPath[1]}`;
@@ -47,4 +47,11 @@ function getUpdatedPathString(filePath: string | string[]) {
   return updatedPath[0];
 }
 
-export { cn, getUpdatedPath, getUpdatedPathString };
+function getFileName(filepath: string | string[]) {
+  const updatedPath = typeof filepath == 'string' ? filepath.split('\\') : filepath;
+  const updatedPathLength = updatedPath.length;
+
+  return updatedPath[updatedPathLength - 1];
+}
+
+export { cn, getUpdatedPath, getUpdatedPathString, getFileName };

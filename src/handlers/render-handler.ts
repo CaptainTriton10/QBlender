@@ -5,48 +5,38 @@ import { RenderItem } from '@/types.ts';
 
 type RenderSettings = {
   isAnimation: boolean;
-  frame?: number;
+  frame: number;
   exportName: string;
   renderFormat: string;
 };
 
 class Render {
-  public filename: string;
+  public filepath: string;
   public settings: RenderSettings;
   public frameCount: number;
   public status: 'Not Started' | 'In Progress' | 'Completed' | 'Error';
-  public exportLocation: string[];
+  public exportLocation: string;
 
-  public constructor(filename: string, exportLocation: string[], frame?: number) {
+  public constructor(filepath: string, exportLocation: string, frame: number) {
     this.status = 'Not Started';
-    this.filename = filename;
+    this.filepath = filepath;
     this.exportLocation = exportLocation;
     this.frameCount = -1;
     this.settings = {
       isAnimation: false,
       frame: frame,
-      exportName: filename,
+      exportName: 'untitled',
       renderFormat: 'PNG',
     };
   }
 
   public command() {
-    const animationOrFrame = this.settings.isAnimation ? '-a' : '-f';
     const frame = this.settings.frame;
-    const exportFile = `${this.exportLocation}/test.png`; //TODO: Update this
+    const exportFile = `${this.exportLocation}\\${this.settings.exportName}`;
 
     let command: Command = {
       command: blenderLocation,
-      args: [
-        '-b',
-        this.filename,
-        '-o',
-        exportFile,
-        '-F',
-        this.settings.renderFormat,
-        '-x',
-        animationOrFrame,
-      ],
+      args: ['-b', this.filepath, '-o', exportFile, '-f', String(this.settings.frame)],
     };
 
     if (this.settings.frame) command.args.push(String(frame));
@@ -55,7 +45,7 @@ class Render {
   }
 
   public toRenderItem() {
-    const splitFilename = this.filename.split('\\');
+    const splitFilename = this.filepath.split('\\');
 
     let renderItem: RenderItem = {
       file: splitFilename[splitFilename.length - 1].slice(0, -6),
@@ -74,7 +64,7 @@ class Render {
     errorCallback: () => void,
   ) {
     const command = this.command();
-    console.log('Rendering blender file: ', this.filename);
+    console.log('Rendering blender file: ', this.filepath);
 
     console.log(command);
 
@@ -87,7 +77,7 @@ class Render {
 
   /**@deprecated */
   public toString() {
-    let command: string = `\"${blenderLocation}\" -b \"${this.filename}\"`;
+    let command: string = `\"${blenderLocation}\" -b \"${this.filepath}\"`;
 
     // this.args.forEach(arg => {
     //     command += ` ${arg}`;
