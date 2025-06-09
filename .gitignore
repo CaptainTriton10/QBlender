@@ -13,6 +13,7 @@ dist-electron
 dist-ssr
 *.local
 archive
+release
 
 # Editor directories and files
 .vscode/*
@@ -32,3 +33,4 @@ test.js
 *.blend1
 
 todo.md
+build.md
