@@ -6,12 +6,13 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { toast } from 'sonner';
 import { AppSidebar } from './components/AppSidebar';
 import { columns } from './components/QueueView/columns';
+import RenderStatus from './components/RenderStatus';
 import { SidebarProvider } from './components/ui/sidebar';
-import { getFrames } from './handlers/blender-data-handler';
+import { getFrames, processRender } from './handlers/blender-data-handler';
 import Render from './handlers/render-handler';
 import { setStore } from './handlers/store-handler';
 import { renderQueueReducer } from './hooks/useRenderQueue';
-import { getUpdatedPath, os } from './lib/utils';
+import { os } from './lib/utils';
 import { RenderItem } from './types';
 
 async function handleSelectBlenderLocation() {
@@ -22,15 +23,25 @@ async function handleSelectBlenderLocation() {
 }
 
 function App() {
-  const [data, setData] = useState<RenderItem[]>([]);
-  const [filepath, setFilepath] = useState('...');
-
+  // RenderQueue state
   const [renderQueue, dispatch] = useReducer(renderQueueReducer, []);
 
-  const queueViewRef = useRef<QueueViewRefType>(null);
+  // Refs
   const hasRun = useRef(false);
 
-  const getSelectedRows = queueViewRef.current?.GetSelectedRows;
+  // Menu
+  const [filepath, setFilepath] = useState('...');
+
+  // QueueView
+  const [data, setData] = useState<RenderItem[]>([]);
+  const queueViewRef = useRef<QueueViewRefType>(null);
+  const getSelectedRows = queueViewRef.current?.getSelectedRows;
+
+  // RenderStatus
+  const [currentTime, setCurrentTime] = useState(0);
+  const [frame, setFrame] = useState<[number, number]>([0, 0]);
+  const [samples, setSamples] = useState<[number, number]>([0, 0]);
+  const [renderNum, setRenderNum] = useState<[number, number]>([0, 0]);
 
   useEffect(() => {
     const updatedQueue = renderQueue.map((render) => render.toRenderItem());
@@ -110,10 +121,26 @@ function App() {
   }
 
   async function renderAll() {
+    if (renderQueue.length === 0) {
+      toast.warning('No renders in queue.');
+      return;
+    }
+
     let startedRenders: boolean[] = new Array(renderQueue.length).fill(false);
 
+    let totalFrames = 0;
+    let totalRenders = renderQueue.length;
+
     function callback(data: string) {
-      console.log(data);
+      // Split output by newlines and remove empty elements
+      const outputLines = data.split('\n').filter((x) => !!x);
+
+      outputLines.forEach((line) => {
+        const renderInfo = processRender(line);
+
+        if (renderInfo?.samples) setSamples(renderInfo.samples);
+        if (renderInfo?.frame) setFrame([renderInfo.frame, totalFrames]);
+      });
     }
 
     function closedCallback(index: number) {
@@ -127,7 +154,6 @@ function App() {
       });
 
       if (index + 1 < renderQueue.length && !startedRenders[index + 1]) {
-        console.log(index, index + 1);
         propagateRender(index + 1);
       }
     }
@@ -157,6 +183,9 @@ function App() {
         },
       });
 
+      setRenderNum([index + 1, totalRenders]);
+      totalFrames = renderQueue[index].frameCount;
+
       // Render with callbacks
       renderQueue[index].render(
         hasRun,
@@ -170,7 +199,22 @@ function App() {
     propagateRender(0);
   }
 
+  function removeRenders() {
+    const selectedRows = getSelectedRows ? getSelectedRows() : [0];
+
+    queueViewRef.current?.deselectAll();
+
+    // Iterate through selected rows in reverse, in order not to mess up later rows
+    [...selectedRows].reverse().forEach((row) => {
+      dispatch({
+        type: 'remove_render',
+        index: row,
+      });
+    });
+  }
+
   useHotkeys('ctrl+i', handleUpload);
+  useHotkeys('x', removeRenders);
 
   return (
     <ThemeProvider defaultTheme="dark">
@@ -193,8 +237,9 @@ function App() {
                 handleSelectBlenderLocation={() => handleSelectBlenderLocation()}
                 handleSelectExport={() => handleSelectExport()}
                 renderAll={renderAll}
-                selectAll={() => queueViewRef.current?.SelectAll()}
-                deselectAll={() => queueViewRef.current?.DeselectAll()}
+                selectAll={() => queueViewRef.current?.selectAll()}
+                deselectAll={() => queueViewRef.current?.deselectAll()}
+                removeRenders={removeRenders}
               />
               <QueueView
                 ref={queueViewRef}
@@ -202,7 +247,13 @@ function App() {
                 data={data}
                 className="rounded-md border flex-grow"
               />
-              {/* <RenderStatus className="mt-auto rounded-md border h-40 bg-background" /> */}
+              <RenderStatus
+                className="mt-auto rounded-md border h-45 bg-background"
+                currentTime={currentTime}
+                samples={samples}
+                frame={frame}
+                renderNum={renderNum}
+              />
             </div>
           </main>
         </div>

@@ -13,18 +13,6 @@ export const columns: ColumnDef<RenderItem>[] = [
     accessorKey: 'file',
     id: 'select',
     header: ({ table }) => {
-      useHotkeys('a', () => {
-        if (!table.getIsAllPageRowsSelected()) {
-          table.toggleAllPageRowsSelected();
-        }
-      });
-
-      useHotkeys('alt+a', () => {
-        if (table.getIsAllPageRowsSelected()) {
-          table.toggleAllPageRowsSelected();
-        }
-      });
-
       return (
         <div className="flex space-x-4 items-center">
           <Checkbox

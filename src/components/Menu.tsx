@@ -15,7 +15,6 @@ import {
   MenubarMenu,
   MenubarSeparator,
   MenubarShortcut,
-  // MenubarShortcut,
   MenubarTrigger,
 } from '@/components/ui/menubar';
 import { Separator } from '@/components/ui/separator.tsx';
@@ -37,6 +36,7 @@ type MenuProps = {
   renderAll: () => void;
   selectAll: () => void;
   deselectAll: () => void;
+  removeRenders: () => void;
   filePath: string;
   setFilePath: Dispatch<React.SetStateAction<string>>;
 };
@@ -74,6 +74,12 @@ function Menu(props: MenuProps) {
         <MenubarMenu>
           <MenubarTrigger>Edit</MenubarTrigger>
           <MenubarContent>
+            <DialogTrigger asChild>
+              <MenubarItem onClick={() => setDialogState('render_properties')}>
+                Render Properties<MenubarShortcut>P</MenubarShortcut>
+              </MenubarItem>
+            </DialogTrigger>
+            <MenubarSeparator className="mx-1" />
             <MenubarItem onClick={props.selectAll}>
               Select All<MenubarShortcut>A</MenubarShortcut>
             </MenubarItem>
@@ -81,11 +87,9 @@ function Menu(props: MenuProps) {
               Deselect All<MenubarShortcut>Alt+A</MenubarShortcut>
             </MenubarItem>
             <MenubarSeparator className="mx-1" />
-            <DialogTrigger asChild>
-              <MenubarItem onClick={() => setDialogState('render_properties')}>
-                Render Properties<MenubarShortcut>P</MenubarShortcut>
-              </MenubarItem>
-            </DialogTrigger>
+            <MenubarItem onClick={props.removeRenders}>
+              Delete Selected<MenubarShortcut>X</MenubarShortcut>
+            </MenubarItem>
           </MenubarContent>
         </MenubarMenu>
         <Separator orientation="vertical" className="mx-1" />

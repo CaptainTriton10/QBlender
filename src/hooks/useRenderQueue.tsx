@@ -13,12 +13,19 @@ export type RenderQueueAction =
   | {
       type: 'set_queue';
       queue: Render[];
+    }
+  | {
+      type: 'remove_render';
+      index: number;
     };
 
 function renderQueueReducer(state: Render[], action: RenderQueueAction): Render[] {
   switch (action.type) {
     case 'add_render':
       return [...state, action.render];
+
+    case 'remove_render':
+      return state.filter((_, i) => i !== action.index);
 
     case 'update_render':
       return state.map((render, index) =>

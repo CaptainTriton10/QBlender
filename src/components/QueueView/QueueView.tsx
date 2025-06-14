@@ -17,11 +17,12 @@ import {
 } from '@/components/ui/table';
 import { Button } from '../ui/button';
 import { useImperativeHandle, Ref, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 type QueueViewRefType = {
-  SelectAll: () => void;
-  DeselectAll: () => void;
-  GetSelectedRows: () => number[];
+  selectAll: () => void;
+  deselectAll: () => void;
+  getSelectedRows: () => number[];
 };
 
 type QueueViewProps<TData, TValue> = {
@@ -54,19 +55,23 @@ function QueueView<TData, TValue>(props: QueueViewProps<TData, TValue>) {
     },
   });
 
-  function SelectAll() {
+  function selectAll() {
     if (!table.getIsAllPageRowsSelected()) {
       table.toggleAllPageRowsSelected();
     }
   }
 
-  function DeselectAll() {
-    if (table.getIsAllPageRowsSelected()) {
+  // TODO: Needs work with partially selected queue
+  function deselectAll() {
+    if (table.getIsSomePageRowsSelected() || table.getIsAllPageRowsSelected()) {
+      table.toggleAllPageRowsSelected();
+    }
+    if (table.getIsSomePageRowsSelected() || table.getIsAllPageRowsSelected()) {
       table.toggleAllPageRowsSelected();
     }
   }
 
-  function GetSelectedRows() {
+  function getSelectedRows() {
     const selection: string[] = Object.keys(table.getState().rowSelection);
     if (!selection) return [];
 
@@ -80,10 +85,13 @@ function QueueView<TData, TValue>(props: QueueViewProps<TData, TValue>) {
   }
 
   useImperativeHandle(props.ref, () => ({
-    SelectAll,
-    DeselectAll,
-    GetSelectedRows,
+    selectAll: selectAll,
+    deselectAll: deselectAll,
+    getSelectedRows: getSelectedRows,
   }));
+
+  useHotkeys('alt+a', deselectAll);
+  useHotkeys('a', selectAll);
 
   return (
     <div className={props.className}>

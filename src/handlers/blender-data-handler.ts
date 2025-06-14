@@ -1,28 +1,63 @@
 import { blenderLocation } from '@/lib/utils';
-import { runCommand } from './command-handler';
-import { MutableRefObject } from 'react';
 import { Command } from '@/types';
+import { MutableRefObject } from 'react';
+import { runCommand } from './command-handler';
 
 const GET_FRAMES_LOCATION = 'src/blender/get-frames.py';
 
+// @ts-ignore
 class RenderInfo {
-  public command: string;
   public info: string[];
-  public time: number;
+  public samples: [number, number] | undefined;
+  public frame: number;
 
-  public constructor(command: string, info: string) {
-    this.command = command;
+  public constructor(info: string) {
     this.info = this._separateInfo(info);
-    this.time = this._getTime();
+    this.samples = this._getSamples();
+    this.frame = this._getFrame();
+  }
+
+  private _getFrame() {
+    const chunks = this.info;
+
+    // Fra:1 Mem:12.23M (Peak 12.83M)
+    if (chunks[0].includes('Fra:')) {
+      const frameText = chunks[0].split(' ')[0];
+      const frame = parseInt(frameText.slice(4));
+
+      return frame ? frame : -1;
+    } else return -1;
   }
 
   private _separateInfo(info: string) {
-    let chunks = info.split('|'); // Separate each info section
-    chunks.map((chunk) => chunk.trim());
+    let chunks = info.split(' | '); // Separate each info section
 
     return chunks;
   }
 
+  private _getSamples(): [number, number] | undefined {
+    const chunks = this.info;
+
+    let samples = 0;
+    let totalSamples = 0;
+
+    // Fra:1 Mem:12.23M (Peak 12.83M) | Time:00:00.06 | Mem:1.64M, Peak:1.64M | Scene, ViewLayer | Sample 0/16
+    chunks.forEach((chunk) => {
+      if (chunk.slice(0, 6) === 'Sample') {
+        const samplesText = chunk.slice(7, chunk.length).split('/');
+        samples = parseInt(samplesText[0]);
+        totalSamples = parseInt(samplesText[1]);
+      }
+    });
+
+    if (!samples && !totalSamples) return;
+    else {
+      return [samples, totalSamples];
+    }
+  }
+
+  /** @deprecated */
+  // @ts-ignore
   private _getTime() {
     // Time:00:03.80
     const time = this.info[1].replace('Time:', '');
@@ -57,12 +92,13 @@ async function getFrames(hasRun: MutableRefObject<boolean>, blendFile: string) {
 }
 
 function processRender(line: string) {
-  if (!(line.slice(0, 4) === 'Fra:')) {
-    return;
-  }
+  if (!(line.slice(0, 4) === 'Fra:')) return;
+  const renderInfo = new RenderInfo(line);
+
+  return renderInfo;
 }
 
-export { getFrames };
+export { getFrames, processRender };
 
 /*
 
