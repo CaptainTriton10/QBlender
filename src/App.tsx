@@ -109,14 +109,14 @@ function App() {
 
     // @ts-expect-error
     const path = await window.open_file.openFile(false).then((path) => {
-      const exportLocation: string[] = path[0];
-      setFilepath(path[0]);
+      const exportLocation: string = path[0];
+      setFilepath(exportLocation);
 
       for (let i = 0; i < selectedRenders.length; i++) {
         dispatch({
           type: 'update_render',
           index: i,
-          updates: { exportLocation: exportLocation.join('\\') },
+          updates: { exportLocation: exportLocation },
         });
       }
     });
@@ -215,6 +215,15 @@ function App() {
     });
   }
 
+  function setRenderFileNames(name: string) {
+    // @ts-expect-error
+    const selectedRenders = getSelectedRows();
+
+    selectedRenders.forEach((render) => {
+      renderQueue[render].exportName = name;
+    });
+  }
+
   useHotkeys('ctrl+i', handleUpload);
   useHotkeys('x', removeRenders);
 
@@ -233,11 +242,12 @@ function App() {
             {/* <SidebarTrigger /> */}
             <div className="p-5 flex flex-col gap-5 h-full">
               <Menu
-                filePath={filepath}
+                filepath={filepath}
                 setFilePath={setFilepath}
                 handleImport={handleUpload}
-                handleSelectBlenderLocation={() => handleSelectBlenderLocation()}
-                handleSelectExport={() => handleSelectExport()}
+                handleSelectBlenderLocation={handleSelectBlenderLocation}
+                handleSelectExport={handleSelectExport}
+                setRenderNames={setRenderFileNames}
                 renderAll={renderAll}
                 selectAll={() => queueViewRef.current?.selectAll()}
                 deselectAll={() => queueViewRef.current?.deselectAll()}

@@ -18,16 +18,15 @@ import {
   MenubarTrigger,
 } from '@/components/ui/menubar';
 import { Separator } from '@/components/ui/separator.tsx';
-import { Dispatch, PropsWithChildren, useRef, useState } from 'react';
+import { CircleAlert } from 'lucide-react';
+import { Dispatch, PropsWithChildren, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { toast } from 'sonner';
 import FileSelect from './FileSelect';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Badge } from './ui/badge';
-import { CircleAlert } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 function AppQuit() {
   window.ipcRenderer.invoke('app_quit');
@@ -37,6 +36,7 @@ type MenuProps = {
   handleImport: () => void;
   handleSelectExport: () => void;
   handleSelectBlenderLocation: () => void;
+  setRenderNames: (name: string) => void;
   renderAll: () => void;
   selectAll: () => void;
   deselectAll: () => void;
@@ -178,7 +178,12 @@ function MenuDialog(props: MenuDialogProps) {
                 </div>
               }
             >
-              <Input placeholder="File name..." />
+              <Input
+                placeholder="File name..."
+                onChange={(event) => {
+                  props.menuProps.setRenderNames(event.target.value);
+                }}
+              />
             </SettingsRow>
             <SettingsRow title="Render Format">
               <RenderFormatSelector />

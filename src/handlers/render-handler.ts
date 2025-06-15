@@ -1,12 +1,10 @@
 import { blenderLocation } from '@/lib/utils';
-import { Command } from '@/types.ts';
+import { Command, RenderItem } from '@/types.ts';
 import { runCommand } from './command-handler';
-import { RenderItem } from '@/types.ts';
 
 type RenderSettings = {
   isAnimation: boolean;
   frame: number;
-  exportName: string;
   renderFormat: string;
 };
 
@@ -16,23 +14,24 @@ class Render {
   public frameCount: number;
   public status: 'Not Started' | 'In Progress' | 'Completed' | 'Error';
   public exportLocation: string;
+  public exportName: string;
 
   public constructor(filepath: string, exportLocation: string, frame: number) {
     this.status = 'Not Started';
     this.filepath = filepath;
     this.exportLocation = exportLocation;
     this.frameCount = -1;
+    this.exportName = 'untitled';
     this.settings = {
       isAnimation: false,
       frame: frame,
-      exportName: 'untitled',
       renderFormat: 'PNG',
     };
   }
 
   public command() {
     const frame = this.settings.frame;
-    const exportFile = `${this.exportLocation}\\${this.settings.exportName}`;
+    const exportFile = `${this.exportLocation}\\${this.exportName}`;
 
     let command: Command = {
       command: blenderLocation,
