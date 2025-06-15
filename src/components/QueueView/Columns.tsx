@@ -3,10 +3,9 @@
 import { Badge } from '@/components/ui/badge.tsx';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { ColumnDef } from '@tanstack/react-table';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { getUpdatedPathString } from '@/lib/utils';
 import { RenderItem } from '@/types';
+import { ColumnDef } from '@tanstack/react-table';
 
 export const columns: ColumnDef<RenderItem>[] = [
   {

@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
 
 // @ts-expect-error
-export const os = await window.get_os.getOS();
+export const os: 'windows' | 'linux' | 'macos' | 'unknown' = await window.get_os.getOS();
 export let blenderLocation: string;
 
 blenderLocation = await getStore('blender_location');

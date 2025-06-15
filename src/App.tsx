@@ -16,8 +16,10 @@ import { os } from './lib/utils';
 import { RenderItem } from './types';
 
 async function handleSelectBlenderLocation() {
+  const extension = os === 'windows' ? ['exe'] : [''];
+
   // @ts-expect-error
-  const path = await window.open_file.openFile(true, ['']).then((path) => {
+  const path = await window.open_file.openFile(true, extension).then((path) => {
     setStore('blender_location', path[0]);
   });
 }
@@ -38,7 +40,7 @@ function App() {
   const getSelectedRows = queueViewRef.current?.getSelectedRows;
 
   // RenderStatus
-  const [currentTime, setCurrentTime] = useState(0);
+  const [currentTime, _setCurrentTime] = useState(0);
   const [frame, setFrame] = useState<[number, number]>([0, 0]);
   const [samples, setSamples] = useState<[number, number]>([0, 0]);
   const [renderNum, setRenderNum] = useState<[number, number]>([0, 0]);
