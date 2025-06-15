@@ -15,9 +15,6 @@ function RenderStatus(props: RenderStatusProps) {
   let renderProgress: number = props.samples[0] / props.samples[1];
   let totalProgress: number = (renderProgress + props.renderNum[0] - 1) / props.renderNum[1];
 
-  console.clear();
-  console.log(totalProgress);
-
   return (
     <div className={props.className}>
       <div className="flex flex-row p-3 gap-3 ">

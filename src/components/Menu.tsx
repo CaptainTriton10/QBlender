@@ -18,12 +18,16 @@ import {
   MenubarTrigger,
 } from '@/components/ui/menubar';
 import { Separator } from '@/components/ui/separator.tsx';
-import { Dispatch, useState } from 'react';
+import { Dispatch, PropsWithChildren, useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import FilePathView from './FilePathView';
-import { Button } from './ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { toast } from 'sonner';
+import FileSelect from './FileSelect';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Badge } from './ui/badge';
+import { CircleAlert } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 function AppQuit() {
   window.ipcRenderer.invoke('app_quit');
@@ -37,8 +41,18 @@ type MenuProps = {
   selectAll: () => void;
   deselectAll: () => void;
   removeRenders: () => void;
-  filePath: string;
+  filepath: string;
   setFilePath: Dispatch<React.SetStateAction<string>>;
+};
+
+type MenuDialogProps = {
+  menuProps: MenuProps;
+  dialogState: string;
+};
+
+type SettingsRowProps = {
+  title?: string;
+  titleElement?: any;
 };
 
 function Menu(props: MenuProps) {
@@ -108,31 +122,67 @@ function Menu(props: MenuProps) {
   );
 }
 
-type MenuDialogProps = {
-  menuProps: MenuProps;
-  dialogState: string;
-};
+function SettingsRow(props: PropsWithChildren<SettingsRowProps>) {
+  if (props.titleElement) {
+    return (
+      <div>
+        {props.titleElement}
+        {props.children}
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <h3 className="my-3">{props.title ? props.title : 'undefined'}</h3>
+        {props.children}
+      </div>
+    );
+  }
+}
 
 function MenuDialog(props: MenuDialogProps) {
+  const [filenameTooltipOpen, setFileNameTooltipOpen] = useState(false);
+
   if (props.dialogState == 'render_properties') {
     return (
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Render Properties</DialogTitle>
           <DialogDescription>Change the properties of this render.</DialogDescription>
-          <Separator className="my-3" />
-          <div className="flex flex-col gap-5">
-            <div>
-              <h3 className="mt-3">Export Location</h3>
-              <div className="flex flex-row items-center justify-between">
-                <FilePathView filePath={props.menuProps.filePath} />
-                <Button onClick={() => props.menuProps.handleSelectExport()}>Select...</Button>
-              </div>
-            </div>
-            <div>
-              <h3 className="my-3">Render Format</h3>
+          <Separator className="mt-3" />
+          <div className="flex flex-col gap-3">
+            <SettingsRow title="Export Location">
+              <FileSelect
+                onFileSelect={props.menuProps.handleSelectExport}
+                filepath={props.menuProps.filepath}
+              />
+            </SettingsRow>
+            <SettingsRow
+              titleElement={
+                <div className="flex">
+                  <h3 className="my-3">File Name</h3>
+                  <Popover open={filenameTooltipOpen}>
+                    <PopoverTrigger style={{ outline: 'none' }}>
+                      <CircleAlert
+                        className="w-5 h-5 ml-3 self-center"
+                        onMouseEnter={() => setFileNameTooltipOpen(true)}
+                        onMouseLeave={() => setFileNameTooltipOpen(false)}
+                      />
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      To add the frame number to the filename, use hashtags, e.g: "
+                      {<code>Example1-##-test</code>}" or "{<code>Example2_####</code>}". The file
+                      extension does not need to be added.
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              }
+            >
+              <Input placeholder="File name..." />
+            </SettingsRow>
+            <SettingsRow title="Render Format">
               <RenderFormatSelector />
-            </div>
+            </SettingsRow>
           </div>
           <DialogFooter>
             <DialogClose asChild>
@@ -153,10 +203,10 @@ function MenuDialog(props: MenuDialogProps) {
             <div>
               <h3 className="my-3">Blender Install Location</h3>
               <div className="flex flex-row items-center justify-between">
-                <FilePathView filePath={props.menuProps.filePath} />
-                <Button onClick={() => props.menuProps.handleSelectBlenderLocation()}>
-                  Select...
-                </Button>
+                <FileSelect
+                  filepath={props.menuProps.filepath}
+                  onFileSelect={props.menuProps.handleSelectBlenderLocation}
+                />
               </div>
             </div>
           </div>
