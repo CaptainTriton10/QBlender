@@ -37,7 +37,8 @@ function App() {
   // QueueView
   const [data, setData] = useState<RenderItem[]>([]);
   const queueViewRef = useRef<QueueViewRefType>(null);
-  const getSelectedRows = queueViewRef.current?.getSelectedRows;
+  // @ts-expect-error
+  const getSelectedRows: () => number[] = queueViewRef.current?.getSelectedRows;
 
   // RenderStatus
   const [currentTime, _setCurrentTime] = useState(0);
@@ -99,7 +100,6 @@ function App() {
   }
 
   async function handleSelectExport() {
-    // @ts-expect-error sybau typescript
     const selectedRenders: number[] = getSelectedRows();
 
     if (!selectedRenders.length) {
@@ -216,11 +216,26 @@ function App() {
   }
 
   function setRenderFileNames(name: string) {
-    // @ts-expect-error
     const selectedRenders = getSelectedRows();
 
     selectedRenders.forEach((render) => {
       renderQueue[render].exportName = name;
+    });
+  }
+
+  function openExportLocations() {
+    const selectedRenders = getSelectedRows();
+
+    selectedRenders.forEach((render) => {
+      renderQueue[render].openExportLocation(hasRun);
+    });
+  }
+
+  function openRenderLocation() {
+    const selectedRenders = getSelectedRows();
+
+    selectedRenders.forEach((render) => {
+      renderQueue[render].openRenderLocation(hasRun);
     });
   }
 
@@ -251,6 +266,8 @@ function App() {
                 renderAll={renderAll}
                 selectAll={() => queueViewRef.current?.selectAll()}
                 deselectAll={() => queueViewRef.current?.deselectAll()}
+                openExportLocation={openExportLocations}
+                openRenderLocation={openRenderLocation}
                 removeRenders={removeRenders}
               />
               <QueueView
