@@ -37,10 +37,12 @@ type MenuProps = {
   handleSelectExport: () => void;
   handleSelectBlenderLocation: () => void;
   setRenderNames: (name: string) => void;
+  removeRenders: () => void;
   renderAll: () => void;
   selectAll: () => void;
   deselectAll: () => void;
-  removeRenders: () => void;
+  openExportLocation: () => void;
+  openRenderLocation: () => void;
   filepath: string;
   setFilePath: Dispatch<React.SetStateAction<string>>;
 };
@@ -114,6 +116,14 @@ function Menu(props: MenuProps) {
             <MenubarItem>Render Selection</MenubarItem>
             <MenubarSeparator className="mx-1" />
             <MenubarItem>Stop Render</MenubarItem>
+          </MenubarContent>
+        </MenubarMenu>
+        <Separator orientation="vertical" className="mx-1" />
+        <MenubarMenu>
+          <MenubarTrigger>Actions</MenubarTrigger>
+          <MenubarContent>
+            <MenubarItem onClick={props.openExportLocation}>Open Export Location</MenubarItem>
+            <MenubarItem onClick={props.openRenderLocation}>Open Render Location</MenubarItem>
           </MenubarContent>
         </MenubarMenu>
       </Menubar>

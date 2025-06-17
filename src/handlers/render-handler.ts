@@ -1,6 +1,7 @@
 import { blenderLocation } from '@/lib/utils';
 import { Command, RenderItem } from '@/types.ts';
 import { runCommand } from './command-handler';
+import { toast } from 'sonner';
 
 type RenderSettings = {
   isAnimation: boolean;
@@ -10,6 +11,7 @@ type RenderSettings = {
 
 class Render {
   public filepath: string;
+  public renderLocation: string;
   public settings: RenderSettings;
   public frameCount: number;
   public status: 'Not Started' | 'In Progress' | 'Completed' | 'Error';
@@ -27,6 +29,15 @@ class Render {
       frame: frame,
       renderFormat: 'PNG',
     };
+
+    this.renderLocation = this._getRenderLocation();
+  }
+
+  private _getRenderLocation() {
+    const splitFilepath = this.filepath.split('\\');
+    const renderLocation = splitFilepath.slice(0, splitFilepath.length - 1);
+
+    return renderLocation.join('\\');
   }
 
   public command() {
@@ -68,6 +79,42 @@ class Render {
     console.log(command);
 
     runCommand(hasRun, command, callback, closedCallback, errorCallback);
+  }
+
+  public openExportLocation(hasRun: React.MutableRefObject<boolean>) {
+    const command: Command = {
+      command: 'explorer.exe',
+      args: [this.exportLocation],
+    };
+
+    runCommand(
+      hasRun,
+      command,
+      () => {},
+      () => {},
+      () => {
+        toast.error('Error opening file explorer.');
+      },
+    );
+  }
+
+  public openRenderLocation(hasRun: React.MutableRefObject<boolean>) {
+    console.log(this.renderLocation);
+
+    const command: Command = {
+      command: 'explorer.exe',
+      args: [this.renderLocation],
+    };
+
+    runCommand(
+      hasRun,
+      command,
+      () => {},
+      () => {},
+      () => {
+        toast.error('Error opening file explorer.');
+      },
+    );
   }
 
   public cloneWith(updates: Partial<Render>) {
