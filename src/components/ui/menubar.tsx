@@ -3,6 +3,7 @@ import * as MenubarPrimitive from '@radix-ui/react-menubar';
 import { CheckIcon, ChevronRightIcon, CircleIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+import { Badge } from './badge';
 
 function Menubar({ className, ...props }: React.ComponentProps<typeof MenubarPrimitive.Root>) {
   return (
@@ -178,11 +179,13 @@ function MenubarSeparator({
 
 function MenubarShortcut({ className, ...props }: React.ComponentProps<'span'>) {
   return (
-    <span
-      data-slot="menubar-shortcut"
-      className={cn('text-muted-foreground ml-auto text-xs tracking-widest', className)}
-      {...props}
-    />
+    <Badge variant="outline">
+      <span
+        data-slot="menubar-shortcut"
+        className={cn('text-muted-foreground ml-auto text-xs tracking-widest', className)}
+        {...props}
+      />
+    </Badge>
   );
 }
 

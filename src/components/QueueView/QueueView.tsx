@@ -133,7 +133,6 @@ function QueueView<TData, TValue>(props: QueueViewProps<TData, TValue>) {
       </Table>
       <div className="flex justify-center gap-5 my-5">
         <Button
-          className="bg-background"
           variant={table.getCanPreviousPage() ? 'secondary' : 'outline'}
           size="sm"
           onClick={() => table.previousPage()}
@@ -142,7 +141,6 @@ function QueueView<TData, TValue>(props: QueueViewProps<TData, TValue>) {
           Previous
         </Button>
         <Button
-          className="mb-auto"
           variant={table.getCanNextPage() ? 'secondary' : 'outline'}
           size="sm"
           onClick={() => table.nextPage()}
