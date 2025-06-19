@@ -62,6 +62,7 @@ class Render {
       status: this.status,
       frameCount: this.frameCount,
       exportLocation: this.exportLocation,
+      isAnimation: this.settings.isAnimation,
     };
 
     return renderItem;
@@ -134,3 +135,4 @@ class Render {
 }
 
 export default Render;
+export type { RenderSettings };

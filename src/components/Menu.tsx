@@ -23,10 +23,12 @@ import { Dispatch, PropsWithChildren, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { toast } from 'sonner';
 import FileSelect from './FileSelect';
+import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Switch } from './ui/switch';
 
 function AppQuit() {
   window.ipcRenderer.invoke('app_quit');
@@ -43,6 +45,7 @@ type MenuProps = {
   deselectAll: () => void;
   openExportLocation: () => void;
   openRenderLocation: () => void;
+  setIsAnimation: (isAnimation: boolean) => void;
   filepath: string;
   setFilePath: Dispatch<React.SetStateAction<string>>;
 };
@@ -152,6 +155,7 @@ function SettingsRow(props: PropsWithChildren<SettingsRowProps>) {
 
 function MenuDialog(props: MenuDialogProps) {
   const [filenameTooltipOpen, setFileNameTooltipOpen] = useState(false);
+  const [animationSwitch, setAnimationSwtich] = useState(false);
 
   if (props.dialogState == 'render_properties') {
     return (
@@ -194,6 +198,22 @@ function MenuDialog(props: MenuDialogProps) {
                   props.menuProps.setRenderNames(event.target.value);
                 }}
               />
+            </SettingsRow>
+            <SettingsRow title="Render Type">
+              <div className="flex gap-3">
+                <Badge variant={animationSwitch ? 'outline' : 'default'} aria-disabled>
+                  Image
+                </Badge>
+                <Switch
+                  onCheckedChange={() => {
+                    props.menuProps.setIsAnimation(!animationSwitch);
+                    console.log(!animationSwitch);
+                    setAnimationSwtich(!animationSwitch);
+                  }}
+                  className="self-center"
+                />
+                <Badge variant={animationSwitch ? 'default' : 'outline'}>Animation</Badge>
+              </div>
             </SettingsRow>
             <SettingsRow title="Render Format">
               <RenderFormatSelector />

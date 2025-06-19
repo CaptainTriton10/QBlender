@@ -73,4 +73,13 @@ export const columns: ColumnDef<RenderItem>[] = [
       else return <i>No export selected.</i>;
     },
   },
+  {
+    accessorKey: 'isAnimation',
+    header: 'Type',
+    cell: ({ row }) => {
+      const isAnimation = row.getValue?.('isAnimation');
+
+      return isAnimation ? <Badge>Animation</Badge> : <Badge>Image</Badge>;
+    },
+  },
 ];
