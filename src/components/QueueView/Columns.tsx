@@ -79,7 +79,11 @@ export const columns: ColumnDef<RenderItem>[] = [
     cell: ({ row }) => {
       const isAnimation = row.getValue?.('isAnimation');
 
-      return isAnimation ? <Badge>Animation</Badge> : <Badge>Image</Badge>;
+      return isAnimation ? (
+        <Badge variant="secondary">Animation</Badge>
+      ) : (
+        <Badge variant="secondary">Image</Badge>
+      );
     },
   },
 ];

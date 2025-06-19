@@ -41,6 +41,7 @@ function App() {
   const getSelectedRows: () => number[] = queueViewRef.current?.getSelectedRows;
 
   // RenderStatus
+  const [isAnimation, setIsAnimation] = useState(false);
   const [currentTime, _setCurrentTime] = useState(0);
   const [frame, setFrame] = useState<[number, number]>([0, 0]);
   const [samples, setSamples] = useState<[number, number]>([0, 0]);
@@ -177,7 +178,11 @@ function App() {
       if (startedRenders[index]) return;
       startedRenders[index] = true;
 
-      // Set the render to be "In Progress" before the render start
+      setIsAnimation(renderQueue[index].settings.isAnimation);
+      setRenderNum([index + 1, totalRenders]);
+      totalFrames = renderQueue[index].frameCount;
+
+      // Set the render to be "In Progress" before the render starts
       dispatch({
         type: 'update_render',
         index: index,
@@ -185,9 +190,6 @@ function App() {
           status: 'In Progress',
         },
       });
-
-      setRenderNum([index + 1, totalRenders]);
-      totalFrames = renderQueue[index].frameCount;
 
       // Render with callbacks
       renderQueue[index].render(
@@ -246,7 +248,7 @@ function App() {
     });
   }
 
-  function setIsAnimation(isAnimation: boolean) {
+  function setRendersIsAnimation(isAnimation: boolean) {
     const selectedRenders = getSelectedRows();
 
     selectedRenders.forEach((render) => {
@@ -293,7 +295,7 @@ function App() {
                 deselectAll={() => queueViewRef.current?.deselectAll()}
                 openExportLocation={openExportLocations}
                 openRenderLocation={openRenderLocation}
-                setIsAnimation={setIsAnimation}
+                setIsAnimation={setRendersIsAnimation}
                 removeRenders={removeRenders}
               />
               <QueueView
@@ -304,6 +306,7 @@ function App() {
               />
               <RenderStatus
                 className="mt-auto rounded-md border h-45 bg-background"
+                isAnimation={isAnimation}
                 currentTime={currentTime}
                 samples={samples}
                 frame={frame}

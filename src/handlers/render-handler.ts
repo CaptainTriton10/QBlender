@@ -44,10 +44,24 @@ class Render {
     const frame = this.settings.frame;
     const exportFile = `${this.exportLocation}\\${this.exportName}`;
 
-    let command: Command = {
-      command: blenderLocation,
-      args: ['-b', this.filepath, '-o', exportFile, '-f', String(this.settings.frame)],
-    };
+    let command: Command = this.settings.isAnimation
+      ? {
+          command: blenderLocation,
+          args: ['-b', this.filepath, '-o', exportFile, '-F', this.settings.renderFormat, '-a'],
+        }
+      : {
+          command: blenderLocation,
+          args: [
+            '-b',
+            this.filepath,
+            '-o',
+            exportFile,
+            '-F',
+            this.settings.renderFormat,
+            '-f',
+            String(this.settings.frame),
+          ],
+        };
 
     if (this.settings.frame) command.args.push(String(frame));
 
