@@ -8,6 +8,7 @@ type RenderItem = {
   status: 'Not Started' | 'In Progress' | 'Completed' | 'Error';
   frameCount: number;
   exportLocation: string;
+  isAnimation: boolean;
 };
 
 export type { Command, RenderItem };

@@ -18,6 +18,7 @@ import {
 import { Button } from '../ui/button';
 import { useImperativeHandle, Ref, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 type QueueViewRefType = {
   selectAll: () => void;
@@ -125,19 +126,20 @@ function QueueView<TData, TValue>(props: QueueViewProps<TData, TValue>) {
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+                Add some renders to get started.
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
-      <div className="flex justify-center gap-5 my-5">
+      <div className="flex justify-center gap-3 my-5">
         <Button
           variant={table.getCanPreviousPage() ? 'secondary' : 'outline'}
           size="sm"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
+          <ChevronLeft />
           Previous
         </Button>
         <Button
@@ -146,7 +148,7 @@ function QueueView<TData, TValue>(props: QueueViewProps<TData, TValue>) {
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
-          Next
+          Next <ChevronRight />
         </Button>
       </div>
     </div>

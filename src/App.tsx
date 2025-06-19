@@ -9,7 +9,7 @@ import { columns } from './components/QueueView/columns';
 import RenderStatus from './components/RenderStatus';
 import { SidebarProvider } from './components/ui/sidebar';
 import { getFrames, processRender } from './handlers/blender-data-handler';
-import Render from './handlers/render-handler';
+import Render, { RenderSettings } from './handlers/render-handler';
 import { setStore } from './handlers/store-handler';
 import { renderQueueReducer } from './hooks/useRenderQueue';
 import { os } from './lib/utils';
@@ -48,6 +48,7 @@ function App() {
 
   useEffect(() => {
     const updatedQueue = renderQueue.map((render) => render.toRenderItem());
+    console.log('render');
 
     setData(updatedQueue);
   }, [renderQueue]);
@@ -219,7 +220,13 @@ function App() {
     const selectedRenders = getSelectedRows();
 
     selectedRenders.forEach((render) => {
-      renderQueue[render].exportName = name;
+      dispatch({
+        type: 'update_render',
+        index: render,
+        updates: {
+          exportName: name,
+        },
+      });
     });
   }
 
@@ -236,6 +243,24 @@ function App() {
 
     selectedRenders.forEach((render) => {
       renderQueue[render].openRenderLocation(hasRun);
+    });
+  }
+
+  function setIsAnimation(isAnimation: boolean) {
+    const selectedRenders = getSelectedRows();
+
+    selectedRenders.forEach((render) => {
+      dispatch({
+        type: 'update_render',
+        index: render,
+        updates: {
+          settings: {
+            isAnimation: isAnimation,
+          } as RenderSettings,
+        },
+      });
+
+      console.log(renderQueue[render].settings.isAnimation);
     });
   }
 
@@ -268,6 +293,7 @@ function App() {
                 deselectAll={() => queueViewRef.current?.deselectAll()}
                 openExportLocation={openExportLocations}
                 openRenderLocation={openRenderLocation}
+                setIsAnimation={setIsAnimation}
                 removeRenders={removeRenders}
               />
               <QueueView
