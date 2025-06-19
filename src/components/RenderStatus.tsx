@@ -3,6 +3,7 @@ import { Progress } from './ui/progress';
 import { Separator } from './ui/separator';
 
 type RenderStatusProps = {
+  isAnimation: boolean;
   currentTime: number;
   samples: [number, number];
   frame: [number, number];
@@ -10,10 +11,53 @@ type RenderStatusProps = {
   className?: string;
 };
 
+function calculateImageProgress(
+  samples: number,
+  totalSamples: number,
+  renderNum: number,
+  totalRenders: number,
+) {
+  let renderProgress = 0;
+  let totalProgress = 0;
+
+  renderProgress = samples / totalSamples;
+  totalProgress = (renderProgress + renderNum - 1) / totalRenders;
+
+  return [renderProgress, totalProgress];
+}
+
+function calculateAnimationProgress(
+  frame: number,
+  totalFrames: number,
+  renderNum: number,
+  totalRenders: number,
+) {
+  let renderProgress = 0;
+  let totalProgress = 0;
+
+  renderProgress = (frame - 1) / totalFrames;
+  totalProgress = (renderProgress + renderNum - 1) / totalRenders;
+
+  return [renderProgress, totalProgress];
+}
+
 // TODO: CPU/Mem stats
 function RenderStatus(props: RenderStatusProps) {
-  let renderProgress: number = props.samples[0] / props.samples[1];
-  let totalProgress: number = (renderProgress + props.renderNum[0] - 1) / props.renderNum[1];
+  let [renderProgress, totalProgress] = props.isAnimation
+    ? calculateAnimationProgress(
+        props.frame[0],
+        props.frame[1],
+        props.renderNum[0],
+        props.renderNum[1],
+      )
+    : calculateImageProgress(
+        props.samples[0],
+        props.samples[1],
+        props.renderNum[0],
+        props.renderNum[1],
+      );
+
+  console.log(renderProgress);
 
   return (
     <div className={props.className}>
