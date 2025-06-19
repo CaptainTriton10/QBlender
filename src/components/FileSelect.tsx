@@ -13,7 +13,7 @@ function FileSelect(props: FileSelectProps) {
       <Button onClick={props.onFileSelect} variant="outline">
         <Folder />
       </Button>
-      <Input placeholder="Select a folder..." value={props.filepath} />
+      <Input placeholder="Select a folder..." value={props.filepath} readOnly />
     </div>
   );
 }
