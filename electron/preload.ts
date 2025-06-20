@@ -45,7 +45,7 @@ contextBridge.exposeInMainWorld('run_command', {
 });
 
 contextBridge.exposeInMainWorld('store', {
-  setStore: (key: string, value: JSON | string) => ipcRenderer.invoke('set_store', key, value),
+  setStore: (key: string, value: any) => ipcRenderer.invoke('set_store', key, value),
 
   getStore: (key: string) => ipcRenderer.invoke('get_store', key),
 });

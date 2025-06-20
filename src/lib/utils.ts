@@ -3,8 +3,8 @@ import { clsx, type ClassValue } from 'clsx';
 import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
 
-// @ts-expect-error
 export const os: 'windows' | 'linux' | 'macos' | 'unknown' = await window.get_os.getOS();
+export const queueStore = 'queue';
 export let blenderLocation: string;
 
 blenderLocation = await getStore('blender_location');
