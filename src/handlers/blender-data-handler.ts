@@ -5,7 +5,6 @@ import { runCommand } from './command-handler';
 
 const GET_FRAMES_LOCATION = 'src/blender/get-frames.py';
 
-// @ts-ignore
 class RenderInfo {
   public info: string[];
   public samples: [number, number] | undefined;

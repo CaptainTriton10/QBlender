@@ -18,8 +18,7 @@ import { RenderItem } from './types';
 async function handleSelectBlenderLocation() {
   const extension = os === 'windows' ? ['exe'] : [''];
 
-  // @ts-expect-error
-  const path = await window.open_file.openFile(true, extension).then((path) => {
+  await window.open_file.openFile(true, extension).then((path) => {
     setStore('blender_location', path[0]);
   });
 }
@@ -57,8 +56,7 @@ function App() {
   async function handleUpload() {
     const currentQueueLength = renderQueue.length;
 
-    // @ts-ignore
-    const paths = await window.open_file.openFile(true, ['blend']).then((paths) => {
+    await window.open_file.openFile(true, ['blend']).then((paths) => {
       paths.forEach((path: string) => {
         // Loop over each uploaded file
         const temporaryPath = os == 'windows' ? 'C:\\tmp' : '/tmp';
@@ -109,8 +107,7 @@ function App() {
       return;
     }
 
-    // @ts-expect-error
-    const path = await window.open_file.openFile(false).then((path) => {
+    await window.open_file.openFile(false).then((path) => {
       const exportLocation: string = path[0];
       setFilepath(exportLocation);
 
