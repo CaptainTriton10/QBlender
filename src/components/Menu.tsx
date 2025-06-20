@@ -41,6 +41,7 @@ type MenuProps = {
   setRenderNames: (name: string) => void;
   removeRenders: () => void;
   renderAll: () => void;
+  renderSelected: () => void;
   selectAll: () => void;
   deselectAll: () => void;
   openExportLocation: () => void;
@@ -116,7 +117,7 @@ function Menu(props: MenuProps) {
           <MenubarTrigger>Render</MenubarTrigger>
           <MenubarContent>
             <MenubarItem onClick={props.renderAll}>Render All</MenubarItem>
-            <MenubarItem>Render Selection</MenubarItem>
+            <MenubarItem onClick={props.renderSelected}>Render Selected</MenubarItem>
             <MenubarSeparator className="mx-1" />
             <MenubarItem>Stop Render</MenubarItem>
           </MenubarContent>

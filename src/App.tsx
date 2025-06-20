@@ -124,16 +124,19 @@ function App() {
     });
   }
 
-  async function renderAll() {
-    if (renderQueue.length === 0) {
+  async function render(renders: number[]) {
+    if (!renderQueue.length) {
       toast.warning('No renders in queue.');
+      return;
+    } else if (!renders.length) {
+      toast.warning('No renders selected.');
       return;
     }
 
-    let startedRenders: boolean[] = new Array(renderQueue.length).fill(false);
+    let startedRenders: boolean[] = new Array(renders.length).fill(false);
 
     let totalFrames = 0;
-    let totalRenders = renderQueue.length;
+    let totalRenders = renders.length;
 
     function callback(data: string) {
       // Split output by newlines and remove empty elements
@@ -151,22 +154,22 @@ function App() {
       toast.info('Render completed.');
       dispatch({
         type: 'update_render',
-        index: index,
+        index: renders[index],
         updates: {
           status: 'Completed',
         },
       });
 
-      if (index + 1 < renderQueue.length && !startedRenders[index + 1]) {
+      if (index + 1 < renders.length && !startedRenders[index + 1]) {
         propagateRender(index + 1);
       }
     }
 
     function errorCallback(index: number) {
-      toast.error(`Error with render: ${renderQueue[index].filepath}`);
+      toast.error(`Error with render: ${renderQueue[renders[index]].filepath}`);
       dispatch({
         type: 'update_render',
-        index: index,
+        index: renders[index],
         updates: {
           status: 'Error',
         },
@@ -178,21 +181,21 @@ function App() {
       if (startedRenders[index]) return;
       startedRenders[index] = true;
 
-      setIsAnimation(renderQueue[index].settings.isAnimation);
+      setIsAnimation(renderQueue[renders[index]].settings.isAnimation);
       setRenderNum([index + 1, totalRenders]);
-      totalFrames = renderQueue[index].frameCount;
+      totalFrames = renderQueue[renders[index]].frameCount;
 
       // Set the render to be "In Progress" before the render starts
       dispatch({
         type: 'update_render',
-        index: index,
+        index: renders[index],
         updates: {
           status: 'In Progress',
         },
       });
 
       // Render with callbacks
-      renderQueue[index].render(
+      renderQueue[renders[index]].render(
         hasRun,
         callback,
         () => closedCallback(index),
@@ -200,9 +203,13 @@ function App() {
       );
     }
 
-    // Start the first render (index 0)
-    propagateRender(0);
+    // Start the first render (index 0 of selected renders)
+    propagateRender(renders[0]);
   }
+
+  // Render with all renders in queue
+  const renderAll = () => render([...Array(renderQueue.length).keys()]);
+  const renderSelected = () => render(getSelectedRows());
 
   function removeRenders() {
     const selectedRows = getSelectedRows ? getSelectedRows() : [0];
@@ -291,6 +298,7 @@ function App() {
                 handleSelectExport={handleSelectExport}
                 setRenderNames={setRenderFileNames}
                 renderAll={renderAll}
+                renderSelected={renderSelected}
                 selectAll={() => queueViewRef.current?.selectAll()}
                 deselectAll={() => queueViewRef.current?.deselectAll()}
                 openExportLocation={openExportLocations}
