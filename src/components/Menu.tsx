@@ -35,6 +35,8 @@ function AppQuit() {
 }
 
 type MenuProps = {
+  saveRenders: () => void;
+  loadRenders: () => void;
   handleImport: () => void;
   handleSelectExport: () => void;
   handleSelectBlenderLocation: () => void;
@@ -81,6 +83,8 @@ function Menu(props: MenuProps) {
             <MenubarItem onClick={props.handleImport}>
               Import<MenubarShortcut>Ctrl+I</MenubarShortcut>
             </MenubarItem>
+            <MenubarItem onClick={props.saveRenders}>Save Queue</MenubarItem>
+            <MenubarItem onClick={props.loadRenders}>Load Queue</MenubarItem>
             <MenubarItem onClick={AppQuit}>
               Quit<MenubarShortcut>Ctrl+Q</MenubarShortcut>
             </MenubarItem>
