@@ -12,7 +12,7 @@ import { getFrames, processRender } from './handlers/blender-data-handler';
 import Render, { RenderSettings } from './handlers/render-handler';
 import { setStore } from './handlers/store-handler';
 import { renderQueueReducer } from './hooks/useRenderQueue';
-import { os } from './lib/utils';
+import { os, queueStore } from './lib/utils';
 import { RenderItem } from './types';
 
 async function handleSelectBlenderLocation() {
@@ -21,6 +21,32 @@ async function handleSelectBlenderLocation() {
   await window.open_file.openFile(true, extension).then((path) => {
     setStore('blender_location', path[0]);
   });
+}
+
+function saveQueueToDisk(renderQueue: Render[]) {
+  let serialisedQueue = { queue: [''] };
+  serialisedQueue.queue = renderQueue.map((render) => render.serialise());
+
+  window.store.setStore(queueStore, serialisedQueue);
+}
+
+async function loadQueueFromDisk() {
+  const serialisedQueue = await window.store.getStore('queue');
+
+  if (!serialisedQueue) {
+    toast.error('No saved queue found.');
+    return [];
+  }
+
+  let newQueue: Render[] = [];
+  serialisedQueue[queueStore].forEach((render: string) => {
+    const jsonRender = JSON.parse(render);
+
+    newQueue.push(Object.assign(new Render('', '', -1), jsonRender));
+  });
+
+  console.log(newQueue);
+  return newQueue;
 }
 
 function App() {
@@ -302,6 +328,15 @@ function App() {
                 openRenderLocation={openRenderLocation}
                 setIsAnimation={setRendersIsAnimation}
                 removeRenders={removeRenders}
+                saveRenders={() => saveQueueToDisk(renderQueue)}
+                loadRenders={() => {
+                  loadQueueFromDisk().then((queue) => {
+                    dispatch({
+                      type: 'set_queue',
+                      queue: queue,
+                    });
+                  });
+                }}
               />
               <QueueView
                 ref={queueViewRef}

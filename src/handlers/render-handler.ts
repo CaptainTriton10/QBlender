@@ -136,6 +136,10 @@ class Render {
     return Object.assign(Object.create(Object.getPrototypeOf(this)), { ...this, ...updates });
   }
 
+  public serialise() {
+    return JSON.stringify(this);
+  }
+
   /**@deprecated */
   public toString() {
     let command: string = `\"${blenderLocation}\" -b \"${this.filepath}\"`;
